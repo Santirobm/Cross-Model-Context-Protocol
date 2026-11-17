@@ -1,0 +1,10 @@
+.venv/
+build/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.gguf
+results/raw/*.bin
+*.egg-info/
+.pytest_cache/
