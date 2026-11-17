@@ -1,0 +1,79 @@
+{
+  "experiment": "Experiment E: Approximate Internal State / Soft-Prompt Transfer",
+  "sender_model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "receiver_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "n_latents": 8,
+  "n_train": 48,
+  "n_eval": 20,
+  "sender_train_extract_ms": 6935.42,
+  "sender_eval_extract_ms": 5895.28,
+  "adapter_train_ms": 111657.14,
+  "train_losses": [
+    5.1181,
+    2.6003,
+    2.5456,
+    3.303,
+    2.6176,
+    2.4737,
+    2.3086,
+    3.0327,
+    3.4974,
+    2.8741,
+    2.0934,
+    2.8003,
+    1.5443,
+    1.9622,
+    2.1662,
+    2.6396,
+    2.9281,
+    2.5789,
+    2.549,
+    2.379,
+    1.5473,
+    2.8478,
+    1.7173,
+    1.7786
+  ],
+  "results": [
+    {
+      "condition": "zero_context",
+      "n_eval": 20,
+      "mean_nll": 2.7108,
+      "perplexity": 15.0412,
+      "exact_match_rate": 0.0,
+      "keyword_recall": 0.05,
+      "mean_receiver_input_tokens": 13.5,
+      "mean_latency_ms": 2154.25
+    },
+    {
+      "condition": "random_projection",
+      "n_eval": 20,
+      "mean_nll": 2.5347,
+      "perplexity": 12.613,
+      "exact_match_rate": 0.0,
+      "keyword_recall": 0.05,
+      "mean_receiver_input_tokens": 21.5,
+      "mean_latency_ms": 2234.97
+    },
+    {
+      "condition": "learned_cmcp",
+      "n_eval": 20,
+      "mean_nll": 1.5738,
+      "perplexity": 4.8249,
+      "exact_match_rate": 0.0,
+      "keyword_recall": 0.05,
+      "mean_receiver_input_tokens": 21.5,
+      "mean_latency_ms": 2692.36
+    },
+    {
+      "condition": "full_text",
+      "n_eval": 20,
+      "mean_nll": 0.3717,
+      "perplexity": 1.4503,
+      "exact_match_rate": 0.85,
+      "keyword_recall": 0.95,
+      "mean_receiver_input_tokens": 30.8,
+      "mean_latency_ms": 3311.11
+    }
+  ]
+}

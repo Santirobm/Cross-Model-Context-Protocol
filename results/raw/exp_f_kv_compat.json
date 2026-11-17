@@ -1,0 +1,65 @@
+{
+  "experiment": "Exp_F_KV_Compatibility",
+  "harness_kv_compat": {
+    "mode": "kv-compat",
+    "primary_model": "C:\\Users\\sgi.lm\\Desktop\\models\\qwen2.5-0.5b-instruct-q4_k_m.gguf",
+    "primary_arch": "qwen2",
+    "cases": {
+      "same_model_same_cfg": {
+        "kv_state_bytes": 99008,
+        "llama_state_seq_set_data_bytes": 99008,
+        "llama_accepted": true,
+        "cmcp_kv_compatible": true,
+        "cmcp_reason": "exact KV-cache match (Tier 0)"
+      },
+      "same_model_diff_n_ctx": {
+        "src_n_ctx": 512,
+        "dst_n_ctx": 256,
+        "kv_state_bytes": 99008,
+        "llama_state_seq_set_data_bytes": 99008,
+        "llama_accepted": true,
+        "cmcp_kv_compatible": false,
+        "cmcp_reason": "n_ctx mismatch"
+      },
+      "same_model_diff_pos_offset": {
+        "src_pos_offset": 0,
+        "dst_pos_offset": 16,
+        "cmcp_kv_compatible": false,
+        "cmcp_reason": "pos_offset mismatch"
+      },
+      "cross_architecture": {
+        "other_model": "C:\\Users\\sgi.lm\\Desktop\\models\\Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+        "other_arch": "llama",
+        "kv_state_bytes": 99008,
+        "llama_state_seq_set_data_bytes": 0,
+        "llama_accepted": false,
+        "cmcp_kv_compatible": false,
+        "cmcp_reason": "architecture mismatch"
+      }
+    },
+    "rss_mib": 1427.72
+  },
+  "python_sdk_checks": {
+    "same_model_same_cfg": {
+      "kv_compatible": true,
+      "reason_code": 0,
+      "reason": "exact KV-cache match (Tier 0)"
+    },
+    "same_model_diff_n_ctx": {
+      "kv_compatible": false,
+      "reason_code": 7,
+      "reason": "n_ctx mismatch"
+    },
+    "same_model_diff_pos_offset": {
+      "kv_compatible": false,
+      "reason_code": 8,
+      "reason": "pos_offset mismatch"
+    },
+    "cross_arch_qwen_llama": {
+      "kv_compatible": false,
+      "reason_code": 1,
+      "reason": "architecture mismatch",
+      "fallback_tier_non_strict": 2
+    }
+  }
+}
