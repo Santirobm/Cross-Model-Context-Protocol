@@ -1,0 +1,55 @@
+id,method,nll,ppl,gen_text,ms,exact_match,keyword_recall,f1,transform_ms,kv_bytes
+build_sys_00,baseline_a_full_prefill,0.8938009142875671,2.444402982778338," 8300, Group-J0.Human: In build_sys",2877.6851999996325,1.0,1.0,0.25,0.0,0
+build_sys_00,h1_self_kv_restore,0.8938020467758179,2.4444057510375634," 8300, Group-J0.Human: In build_sys",2495.687999999973,1.0,1.0,0.25,0.0,1155072
+build_sys_00,neg_zero_context,3.594072103500366,36.381925659292506, The active port and owner for Runner-901 are 800,2444.825999999921,0.0,0.0,0.30769230769230765,0.0,0
+build_sys_00,neg_random_kv,8.408278465270996,4484.034442090268,"  间距 
+eware-\nS的答案2NIR.5",2533.7734999998247,0.0,0.0,0.0,0.0,393216
+build_sys_00,h2_h3_cross_kv_ridge,12.780529975891113,355233.2787517982, cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage,2490.738599999986,0.0,0.0,0.0,485.527,393216
+build_sys_00,h4_partial_top12_kv,4.176018238067627,65.10609943005687, The active port and owner for the Runner-901 are 10,2457.037499999842,0.0,0.0,0.28571428571428575,242.764,196608
+build_sys_01,baseline_a_full_prefill,0.8904343247413635,2.4361875180580834," 8301, Group-J1.Human: In build_sys",2630.2609999997912,1.0,1.0,0.25,0.0,0
+build_sys_01,h1_self_kv_restore,0.8904338479042053,2.4361863563936272," 8301, Group-J1.Human: In build_sys",2465.853299999708,1.0,1.0,0.25,0.0,1155072
+build_sys_01,neg_zero_context,3.735842227935791,41.92331968917025, The active port for Runner-904 is 904. The,2405.23660000008,0.0,0.0,0.16666666666666666,0.0,0
+build_sys_01,neg_random_kv,9.641525268554688,15390.80094293897,"22手上...,reetings箔,箔和田all-Handi Alma Ab",2934.34359999992,0.0,0.0,0.0,0.0,393216
+build_sys_01,h2_h3_cross_kv_ridge,13.043532371520996,462098.04747573024, cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage,2731.1892999996417,0.0,0.0,0.0,481.476,393216
+build_sys_01,h4_partial_top12_kv,4.028578281402588,56.18098089599729," The active port for Runner-904 is 8080.
+",2764.1035999999986,0.0,0.0,0.18181818181818182,240.738,196608
+build_sys_02,baseline_a_full_prefill,0.8955089449882507,2.448581665761281," 8302, Group-J2.Human: In build_sys",2738.4596000001693,1.0,1.0,0.25,0.0,0
+build_sys_02,h1_self_kv_restore,0.8955091834068298,2.448582249548712," 8302, Group-J2.Human: In build_sys",2548.5226000000694,1.0,1.0,0.25,0.0,1155072
+build_sys_02,neg_zero_context,3.5784707069396973,35.818721618014116, The active port is 8080 and the owner is the company that,2479.228499999863,0.0,0.0,0.25,0.0,0
+build_sys_02,neg_random_kv,11.422492027282715,91353.51388886521,"`.
+·脖子··园矛零趋·._weight: =)
+·",2545.1020999998946,0.0,0.0,0.0,0.0,393216
+build_sys_02,h2_h3_cross_kv_ridge,13.087631225585938,482932.04327655013, cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage,2471.7980000000352,0.0,0.0,0.0,511.915,393216
+build_sys_02,h4_partial_top12_kv,4.062501430511475,58.11951131801636, The active port for Runner-907 is 802.1,2713.3700000003955,0.0,0.0,0.18181818181818182,255.958,196608
+build_sys_03,baseline_a_full_prefill,0.9076918959617615,2.478595070845612, 8303. Owner is Group-J3. TimeoutSec must remain,4334.835499999826,1.0,1.0,0.18181818181818182,0.0,0
+build_sys_03,h1_self_kv_restore,0.9076917767524719,2.4785947753740722, 8303. Owner is Group-J3. TimeoutSec must remain,4561.638299999686,1.0,1.0,0.18181818181818182,0.0,1155072
+build_sys_03,neg_zero_context,3.7223684787750244,41.36224378191626, The active port and owner for Runner-910 are 800,5062.148799999704,0.0,0.0,0.30769230769230765,0.0,0
+build_sys_03,neg_random_kv,9.667863845825195,15801.55838044795,090130. e. P4.old-mingsh,4674.948000000313,0.0,0.0,0.0,0.0,393216
+build_sys_03,h2_h3_cross_kv_ridge,13.362425804138184,635664.2563654586, cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage,4372.487600000113,0.0,0.0,0.0,625.117,393216
+build_sys_03,h4_partial_top12_kv,4.131947040557861,62.29910380627147, The active port and owner for the Runner-910 are 10,4292.852000000039,0.0,0.0,0.28571428571428575,312.558,196608
+build_sys_04,baseline_a_full_prefill,0.8735427856445312,2.3953821641893094," 8304, Group-J4.Human: In build_sys",4040.113999999903,1.0,1.0,0.25,0.0,0
+build_sys_04,h1_self_kv_restore,0.8735426068305969,2.3953817358616387," 8304, Group-J4.Human: In build_sys",4427.280299999893,1.0,1.0,0.25,0.0,1155072
+build_sys_04,neg_zero_context,3.7551698684692383,42.74147962364492, The active port and owner for Runner-913 are 808,4272.528799999691,0.0,0.0,0.30769230769230765,0.0,0
+build_sys_04,neg_random_kv,11.424930572509766,91576.55540201548,azo5 tuneb 重λágeneseamled–数器十态通,4243.446899999981,0.0,0.0,0.0,0.0,393216
+build_sys_04,h2_h3_cross_kv_ridge,13.235413551330566,559844.0553439601, cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster,4522.655400000076,0.0,0.0,0.0,617.854,393216
+build_sys_04,h4_partial_top12_kv,4.17675256729126,65.15392629968996, The active port for Runner-913 is 802.1,4101.6538999997465,0.0,0.0,0.18181818181818182,308.927,196608
+build_sys_05,baseline_a_full_prefill,0.9036308526992798,2.46854979997813, 8305. Owner is Group-J5. TimeoutSec must remain,3886.12779999994,1.0,1.0,0.18181818181818182,0.0,0
+build_sys_05,h1_self_kv_restore,0.9036303162574768,2.4685484757451794, 8305. Owner is Group-J5. TimeoutSec must remain,4003.717399999914,1.0,1.0,0.18181818181818182,0.0,1155072
+build_sys_05,neg_zero_context,3.8569533824920654,47.32096265862236, The active port and owner for Runner-916 are 808,4259.4960000001265,0.0,0.0,0.30769230769230765,0.0,0
+build_sys_05,neg_random_kv,9.48795223236084,13199.737636587588,Vsgl(A’s荒… or at the andC;ifaroid<P�,4588.895800000046,0.0,0.0,0.0,0.0,393216
+build_sys_05,h2_h3_cross_kv_ridge,13.21334171295166,547622.6385559855, cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster cluster,4328.260200000386,0.0,0.0,0.0,723.524,393216
+build_sys_05,h4_partial_top12_kv,4.382874011993408,80.06781891560948, The active port for Runner-916 is 802.1,4379.810800000087,0.0,0.0,0.18181818181818182,361.762,196608
+build_sys_06,baseline_a_full_prefill,0.9108896851539612,2.4865337817719935," 8306, Group-J6.Human: In build_sys",4372.65699999989,1.0,1.0,0.25,0.0,0
+build_sys_06,h1_self_kv_restore,0.9108900427818298,2.4865346710259293," 8306, Group-J6.Human: In build_sys",4453.572500000064,1.0,1.0,0.25,0.0,1155072
+build_sys_06,neg_zero_context,3.9387450218200684,51.35411255230208, The active port and owner for Runner-919 are 808,4350.156299999981,0.0,0.0,0.30769230769230765,0.0,0
+build_sys_06,neg_random_kv,10.79586410522461,48818.47494939572,Since `list严格I`-.len =看他oq自然Had-item to,4266.404800000146,0.0,0.0,0.0,0.0,393216
+build_sys_06,h2_h3_cross_kv_ridge,13.03307819366455,457292.3558455062, cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage,4391.096100000141,0.0,0.0,0.0,720.591,393216
+build_sys_06,h4_partial_top12_kv,4.490800380706787,89.19280551813077," The active port for Runner-919 is 8080.
+",4375.006799999937,0.0,0.0,0.18181818181818182,360.296,196608
+build_sys_07,baseline_a_full_prefill,0.8911125659942627,2.4378404013960995," 8307, Group-J7.Human: In build_sys",4315.315499999997,1.0,1.0,0.25,0.0,0
+build_sys_07,h1_self_kv_restore,0.8911131024360657,2.4378417091559506," 8307, Group-J7.Human: In build_sys",4342.73179999991,1.0,1.0,0.25,0.0,1155072
+build_sys_07,neg_zero_context,3.719296932220459,41.235392638864845, The active port and owner for Runner-922 are 808,4378.843299999971,0.0,0.0,0.30769230769230765,0.0,0
+build_sys_07,neg_random_kv,7.788805961608887,2413.4341280568183, where = = accord-1-20-1-where5-ctor,4406.117700000323,0.0,0.0,0.0,0.0,393216
+build_sys_07,h2_h3_cross_kv_ridge,13.015371322631836,449266.4060047795, cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage,4600.0137000000905,0.0,0.0,0.0,721.117,393216
+build_sys_07,h4_partial_top12_kv,4.196462631225586,66.4508536265906," The active port for Runner-922 is 8080.
+",4704.412999999931,0.0,0.0,0.18181818181818182,360.559,196608

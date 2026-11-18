@@ -1,0 +1,15 @@
+{
+  "split": "eval",
+  "num_tasks": 18,
+  "reps": 3,
+  "max_tokens": 32,
+  "receiver_model": "Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+  "dataset_sha256": "f4e0eb99b4cf26371f734ea332cc2fc4b81937bcd8628e8cffccc3b4940d5a84",
+  "methods": [
+    "full_history",
+    "json_structured",
+    "cmcp_textual",
+    "cmcp_binary_tlv",
+    "cmcp_incremental"
+  ]
+}

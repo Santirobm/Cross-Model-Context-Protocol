@@ -1,0 +1,292 @@
+{
+  "split": {
+    "train_domains": 4,
+    "train_n": 48,
+    "eval_domains": 2,
+    "eval_n": 24
+  },
+  "extraction": {
+    "sender": {
+      "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+      "hidden_size": 576,
+      "num_layers": 30,
+      "extract_ms": 14205.48,
+      "rss_loaded_mib": 0.0,
+      "rss_after_free_mib": 0.0
+    },
+    "receiver": {
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "hidden_size": 896,
+      "num_layers": 24,
+      "extract_ms": 86051.07,
+      "rss_loaded_mib": 0.0,
+      "rss_after_free_mib": 0.0
+    }
+  },
+  "results": [
+    {
+      "layer": "embed_mean",
+      "method": "neg_random_unlearned",
+      "cka_before": 0.9938,
+      "cka_after": 0.9938,
+      "cosine_sim": 0.0294,
+      "mse": 0.0013,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.25,
+      "fit_plus_infer_ms": 29.41
+    },
+    {
+      "layer": "embed_mean",
+      "method": "neg_permuted_pairs",
+      "cka_before": 0.9938,
+      "cka_after": 0.5818,
+      "cosine_sim": 0.9819,
+      "mse": 0.0,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 45.67
+    },
+    {
+      "layer": "embed_mean",
+      "method": "ridge",
+      "cka_before": 0.9938,
+      "cka_after": 0.5364,
+      "cosine_sim": 0.9819,
+      "mse": 0.0,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 4.25
+    },
+    {
+      "layer": "embed_mean",
+      "method": "procrustes",
+      "cka_before": 0.9938,
+      "cka_after": 0.9938,
+      "cosine_sim": 0.9788,
+      "mse": 0.0,
+      "retrieval_top1": 0.875,
+      "retrieval_top5": 1.0,
+      "fit_plus_infer_ms": 66.2
+    },
+    {
+      "layer": "embed_mean",
+      "method": "low_rank_64",
+      "cka_before": 0.9938,
+      "cka_after": 0.5364,
+      "cosine_sim": 0.9819,
+      "mse": 0.0,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 833.53
+    },
+    {
+      "layer": "embed_mean",
+      "method": "small_mlp",
+      "cka_before": 0.9938,
+      "cka_after": 0.8926,
+      "cosine_sim": 0.6613,
+      "mse": 0.0878,
+      "retrieval_top1": 0.2083,
+      "retrieval_top5": 0.625,
+      "fit_plus_infer_ms": 3396.7
+    },
+    {
+      "layer": "mid_mean",
+      "method": "neg_random_unlearned",
+      "cka_before": 0.9979,
+      "cka_after": 0.9979,
+      "cosine_sim": -0.0373,
+      "mse": 308.6278,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 9.77
+    },
+    {
+      "layer": "mid_mean",
+      "method": "neg_permuted_pairs",
+      "cka_before": 0.9979,
+      "cka_after": 0.8552,
+      "cosine_sim": 0.9988,
+      "mse": 0.007,
+      "retrieval_top1": 0.0,
+      "retrieval_top5": 0.1667,
+      "fit_plus_infer_ms": 2.72
+    },
+    {
+      "layer": "mid_mean",
+      "method": "ridge",
+      "cka_before": 0.9979,
+      "cka_after": 0.9907,
+      "cosine_sim": 0.9989,
+      "mse": 0.0042,
+      "retrieval_top1": 0.2917,
+      "retrieval_top5": 0.6667,
+      "fit_plus_infer_ms": 2.57
+    },
+    {
+      "layer": "mid_mean",
+      "method": "procrustes",
+      "cka_before": 0.9979,
+      "cka_after": 0.9979,
+      "cosine_sim": 0.9983,
+      "mse": 0.0058,
+      "retrieval_top1": 0.375,
+      "retrieval_top5": 0.6667,
+      "fit_plus_infer_ms": 34.49
+    },
+    {
+      "layer": "mid_mean",
+      "method": "low_rank_64",
+      "cka_before": 0.9979,
+      "cka_after": 0.9907,
+      "cosine_sim": 0.9989,
+      "mse": 0.0042,
+      "retrieval_top1": 0.2917,
+      "retrieval_top5": 0.6667,
+      "fit_plus_infer_ms": 815.96
+    },
+    {
+      "layer": "mid_mean",
+      "method": "small_mlp",
+      "cka_before": 0.9979,
+      "cka_after": 0.9742,
+      "cosine_sim": 0.9643,
+      "mse": 0.1512,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.375,
+      "fit_plus_infer_ms": 2010.82
+    },
+    {
+      "layer": "last_tok",
+      "method": "neg_random_unlearned",
+      "cka_before": 0.9994,
+      "cka_after": 0.9994,
+      "cosine_sim": 0.0147,
+      "mse": 103.2163,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 10.23
+    },
+    {
+      "layer": "last_tok",
+      "method": "neg_permuted_pairs",
+      "cka_before": 0.9994,
+      "cka_after": 0.9751,
+      "cosine_sim": 0.9806,
+      "mse": 3.8861,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 3.12
+    },
+    {
+      "layer": "last_tok",
+      "method": "ridge",
+      "cka_before": 0.9994,
+      "cka_after": 0.9931,
+      "cosine_sim": 0.9822,
+      "mse": 3.568,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 2.81
+    },
+    {
+      "layer": "last_tok",
+      "method": "procrustes",
+      "cka_before": 0.9994,
+      "cka_after": 0.9994,
+      "cosine_sim": 0.9675,
+      "mse": 6.5858,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 32.4
+    },
+    {
+      "layer": "last_tok",
+      "method": "low_rank_64",
+      "cka_before": 0.9994,
+      "cka_after": 0.9931,
+      "cosine_sim": 0.9822,
+      "mse": 3.568,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 669.54
+    },
+    {
+      "layer": "last_tok",
+      "method": "small_mlp",
+      "cka_before": 0.9994,
+      "cka_after": 0.9945,
+      "cosine_sim": 0.9363,
+      "mse": 17.8241,
+      "retrieval_top1": 0.0833,
+      "retrieval_top5": 0.4167,
+      "fit_plus_infer_ms": 1752.15
+    },
+    {
+      "layer": "last_mean",
+      "method": "neg_random_unlearned",
+      "cka_before": 0.9978,
+      "cka_after": 0.9978,
+      "cosine_sim": -0.0061,
+      "mse": 57.9517,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 11.73
+    },
+    {
+      "layer": "last_mean",
+      "method": "neg_permuted_pairs",
+      "cka_before": 0.9978,
+      "cka_after": 0.9916,
+      "cosine_sim": 0.9858,
+      "mse": 1.5727,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 3.42
+    },
+    {
+      "layer": "last_mean",
+      "method": "ridge",
+      "cka_before": 0.9978,
+      "cka_after": 0.9916,
+      "cosine_sim": 0.9869,
+      "mse": 1.4635,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 3.51
+    },
+    {
+      "layer": "last_mean",
+      "method": "procrustes",
+      "cka_before": 0.9978,
+      "cka_after": 0.9978,
+      "cosine_sim": 0.9772,
+      "mse": 2.5092,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 37.11
+    },
+    {
+      "layer": "last_mean",
+      "method": "low_rank_64",
+      "cka_before": 0.9978,
+      "cka_after": 0.9916,
+      "cosine_sim": 0.9869,
+      "mse": 1.4635,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 627.83
+    },
+    {
+      "layer": "last_mean",
+      "method": "small_mlp",
+      "cka_before": 0.9978,
+      "cka_after": 0.9972,
+      "cosine_sim": 0.9608,
+      "mse": 10.158,
+      "retrieval_top1": 0.0417,
+      "retrieval_top5": 0.2083,
+      "fit_plus_infer_ms": 1934.07
+    }
+  ]
+}

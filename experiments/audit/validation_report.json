@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "violations": [],
+  "checks": {
+    "context_dataset": {
+      "total": 30,
+      "dev": 6,
+      "tune": 6,
+      "eval": 18,
+      "sha256": "f4e0eb99b4cf26371f734ea332cc2fc4b81937bcd8628e8cffccc3b4940d5a84",
+      "leaked_instructions": 0
+    },
+    "latent_kv_split": {
+      "train_n": 48,
+      "eval_n": 24,
+      "train_domains": [
+        "cluster_ops",
+        "ml_pipeline",
+        "sec_policy",
+        "storage_eng"
+      ],
+      "eval_domains": [
+        "build_sys",
+        "net_mesh"
+      ]
+    },
+    "csv_artifacts": {
+      "context_benchmark_runs.csv": {
+        "rows": 270,
+        "nan_inf": false
+      },
+      "cmcp21_latent_results.csv": {
+        "rows": 24,
+        "nan_inf": false
+      },
+      "cmcp21_kv_transfer_runs.csv": {
+        "rows": 48,
+        "nan_inf": false
+      }
+    },
+    "config_clean": true
+  }
+}

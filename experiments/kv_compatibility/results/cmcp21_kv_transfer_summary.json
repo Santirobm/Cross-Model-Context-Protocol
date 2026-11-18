@@ -1,0 +1,116 @@
+{
+  "architectures": {
+    "sender": {
+      "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+      "architectures": [
+        "LlamaForCausalLM"
+      ],
+      "num_hidden_layers": 30,
+      "hidden_size": 576,
+      "num_attention_heads": 9,
+      "num_key_value_heads": 3,
+      "head_dim": 64,
+      "rope_theta": 10000.0,
+      "rope_scaling": {
+        "rope_theta": 100000,
+        "rope_type": "default"
+      },
+      "rms_norm_eps": 1e-05,
+      "vocab_size": 49152,
+      "attention_bias": false,
+      "extract_total_ms": 9765.42,
+      "extract_per_item_ms": 305.17
+    },
+    "receiver": {
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "architectures": [
+        "Qwen2ForCausalLM"
+      ],
+      "num_hidden_layers": 24,
+      "hidden_size": 896,
+      "num_attention_heads": 14,
+      "num_key_value_heads": 2,
+      "head_dim": 64,
+      "rope_theta": 10000.0,
+      "rope_scaling": {
+        "rope_theta": 1000000.0,
+        "rope_type": "default"
+      },
+      "rms_norm_eps": 1e-06,
+      "vocab_size": 151936,
+      "attention_bias": false,
+      "extract_total_ms": 45553.0,
+      "extract_per_item_ms": 1423.53
+    }
+  },
+  "ridge_fit_ms": 3241.31,
+  "n_slots": 16,
+  "methods": {
+    "baseline_a_full_prefill": {
+      "n": 8,
+      "mean_nll": 0.8958,
+      "mean_ppl": 2.4495,
+      "exact_match": 1.0,
+      "keyword_recall": 1.0,
+      "f1": 0.233,
+      "mean_eval_ms": 3649.43,
+      "mean_transform_ms": 0.0,
+      "sample_output": " 8300, Group-J0.Human: In build_sys"
+    },
+    "h1_self_kv_restore": {
+      "n": 8,
+      "mean_nll": 0.8958,
+      "mean_ppl": 2.4495,
+      "exact_match": 1.0,
+      "keyword_recall": 1.0,
+      "f1": 0.233,
+      "mean_eval_ms": 3662.38,
+      "mean_transform_ms": 0.0,
+      "sample_output": " 8300, Group-J0.Human: In build_sys"
+    },
+    "neg_zero_context": {
+      "n": 8,
+      "mean_nll": 3.7376,
+      "mean_ppl": 42.2673,
+      "exact_match": 0.0,
+      "keyword_recall": 0.0,
+      "f1": 0.2829,
+      "mean_eval_ms": 3706.56,
+      "mean_transform_ms": 0.0,
+      "sample_output": " The active port and owner for Runner-901 are 800"
+    },
+    "neg_random_kv": {
+      "n": 8,
+      "mean_nll": 9.8297,
+      "mean_ppl": 35379.7637,
+      "exact_match": 0.0,
+      "keyword_recall": 0.0,
+      "f1": 0.0,
+      "mean_eval_ms": 3774.13,
+      "mean_transform_ms": 0.0,
+      "sample_output": "  \u95f4\u8ddd \neware-\\nS\u7684\u7b54\u68482NIR.5"
+    },
+    "h2_h3_cross_kv_ridge": {
+      "n": 8,
+      "mean_nll": 13.0964,
+      "mean_ppl": 493744.1352,
+      "exact_match": 0.0,
+      "keyword_recall": 0.0,
+      "f1": 0.0,
+      "mean_eval_ms": 3738.53,
+      "mean_transform_ms": 610.89,
+      "sample_output": " cluster storage cluster storage cluster storage cluster storage cluster storage cluster storage clu"
+    },
+    "h4_partial_top12_kv": {
+      "n": 8,
+      "mean_nll": 4.2057,
+      "mean_ppl": 67.8214,
+      "exact_match": 0.0,
+      "keyword_recall": 0.0,
+      "f1": 0.2078,
+      "mean_eval_ms": 3723.53,
+      "mean_transform_ms": 305.445,
+      "sample_output": " The active port and owner for the Runner-901 are 10"
+    }
+  }
+}
