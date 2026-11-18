@@ -208,10 +208,11 @@ def main() -> int:
     parser.add_argument("--model-a", default=os.environ.get("CMCP_MODEL_A", "models/qwen2.5-0.5b-instruct-q4_k_m.gguf"))
     parser.add_argument("--model-b", default=os.environ.get("CMCP_MODEL_B", "models/Llama-3.2-1B-Instruct-Q4_K_M.gguf"))
     parser.add_argument("--tag", default="hetero")
+    parser.add_argument("--results-dir", default="")
     args = parser.parse_args()
 
     out_dir = Path(__file__).resolve().parent
-    res_dir = out_dir / "results"
+    res_dir = Path(args.results_dir) if args.results_dir else (out_dir / "results")
     cfg_dir = out_dir / "configs"
     log_dir = out_dir / "logs"
     res_dir.mkdir(parents=True, exist_ok=True)
@@ -237,6 +238,8 @@ def main() -> int:
         "model_b_name": Path(args.model_b).name,
         "tag": args.tag,
         "dataset_sha256": dataset_sha256(),
+        "bootstrap_seed": 42,
+        "decoding": "greedy",
         "methods": methods,
     }
     (cfg_dir / f"multiturn_config_{args.tag}.json").write_text(json.dumps(cfg, indent=2), encoding="utf-8")
@@ -510,7 +513,7 @@ def main() -> int:
     # Scenario-level clustered bootstrap summary (n = len(scenarios))
     summary: Dict[str, Any] = {"config": cfg, "methods": {}, "paired_vs_full_history": {}}
     stat_keys = [
-        "wire_bytes", "input_tokens", "extract_ms", "prefill_ms", "e2e_accum_ms",
+        "wire_bytes", "input_tokens", "output_tokens", "extract_ms", "prefill_ms", "gen_ms", "e2e_accum_ms",
         "exact_match", "f1", "keyword_recall", "entity_recall", "relation_recovery",
         "constraint_satisfaction", "temporal_consistency", "contradiction_resolution",
         "decision_consistency", "task_completion_rate", "obsolete_info_rate",
@@ -519,15 +522,22 @@ def main() -> int:
     sc_means: Dict[str, Dict[str, List[float]]] = {m: {k: [] for k in stat_keys} for m in methods}
 
     for m in methods:
+        m_all_rows = [r for r in rows if r["method"] == m]
         for sid in sc_ids:
-            srows = [r for r in rows if r["method"] == m and r["scenario_id"] == sid]
+            srows = [r for r in m_all_rows if r["scenario_id"] == sid]
             for k in stat_keys:
                 sc_means[m][k].append(float(statistics.mean([float(r[k]) for r in srows])))
 
-        m_summary: Dict[str, Any] = {"n_scenarios": len(sc_ids), "n_rows": len([r for r in rows if r["method"] == m])}
+        m_summary: Dict[str, Any] = {"n_scenarios": len(sc_ids), "n_rows": len(m_all_rows)}
         for k in stat_keys:
             mu, lo, hi = _bootstrap_ci(sc_means[m][k])
-            m_summary[k] = {"mean": round(mu, 4), "ci95": [round(lo, 4), round(hi, 4)]}
+            entry: Dict[str, Any] = {"mean": round(mu, 4), "ci95": [round(lo, 4), round(hi, 4)]}
+            if k in ("prefill_ms", "gen_ms", "e2e_accum_ms", "output_tokens"):
+                raw_vals = [float(r[k]) for r in m_all_rows]
+                entry["p50"] = round(float(np.percentile(raw_vals, 50)), 4)
+                entry["p95"] = round(float(np.percentile(raw_vals, 95)), 4)
+                entry["std"] = round(float(np.std(raw_vals, ddof=1)) if len(raw_vals) > 1 else 0.0, 4)
+            m_summary[k] = entry
         summary["methods"][m] = m_summary
 
     for m in methods:

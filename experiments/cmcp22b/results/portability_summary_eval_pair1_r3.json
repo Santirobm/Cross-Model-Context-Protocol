@@ -1,0 +1,248 @@
+{
+  "config": {
+    "split": "eval",
+    "num_scenarios": 50,
+    "reps": 3,
+    "max_tokens": 64,
+    "model_a_name": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+    "model_b_name": "Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+    "styles": [
+      "r3"
+    ],
+    "tag": "eval_pair1_r3",
+    "dataset_sha256": "b8911a280ff429e37b589665f472265945ebd8f9223c95de242aaacc3313e776",
+    "bootstrap_seed": 42,
+    "decoding": "greedy",
+    "methods": [
+      "full_history",
+      "cmcp_r3"
+    ]
+  },
+  "methods": {
+    "full_history": {
+      "n_scenarios": 50,
+      "n_rows": 300,
+      "wire_bytes": {
+        "mean": 686.36,
+        "ci95": [
+          683.53,
+          689.3102
+        ]
+      },
+      "input_tokens": {
+        "mean": 235.96,
+        "ci95": [
+          234.74,
+          237.2703
+        ]
+      },
+      "output_tokens": {
+        "mean": 42.41,
+        "ci95": [
+          41.47,
+          43.19
+        ],
+        "p50": 33.0,
+        "p95": 64.0,
+        "std": 19.8028
+      },
+      "prefill_ms": {
+        "mean": 845.5752,
+        "ci95": [
+          840.8069,
+          850.2211
+        ],
+        "p50": 824.5905,
+        "p95": 1006.4999,
+        "std": 136.4311
+      },
+      "decode_ms": {
+        "mean": 1725.0858,
+        "ci95": [
+          1687.0057,
+          1756.2675
+        ],
+        "p50": 1344.1185,
+        "p95": 2627.2119,
+        "std": 810.9786
+      },
+      "e2e_accum_ms": {
+        "mean": 2571.0046,
+        "ci95": [
+          2532.9535,
+          2602.4764
+        ],
+        "p50": 2208.289,
+        "p95": 3625.7652,
+        "std": 943.3607
+      },
+      "exact_match": {
+        "mean": 0.62,
+        "ci95": [
+          0.56,
+          0.68
+        ]
+      },
+      "relation_recovery": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.85,
+        "ci95": [
+          0.78,
+          0.91
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.02,
+        "ci95": [
+          0.0,
+          0.05
+        ]
+      }
+    },
+    "cmcp_r3": {
+      "n_scenarios": 50,
+      "n_rows": 300,
+      "wire_bytes": {
+        "mean": 249.96,
+        "ci95": [
+          249.49,
+          250.39
+        ]
+      },
+      "input_tokens": {
+        "mean": 164.38,
+        "ci95": [
+          163.51,
+          165.38
+        ]
+      },
+      "output_tokens": {
+        "mean": 60.19,
+        "ci95": [
+          58.63,
+          61.65
+        ],
+        "p50": 64.0,
+        "p95": 64.0,
+        "std": 8.6384
+      },
+      "prefill_ms": {
+        "mean": 587.972,
+        "ci95": [
+          584.5111,
+          591.8978
+        ],
+        "p50": 562.9145,
+        "p95": 678.1939,
+        "std": 67.472
+      },
+      "decode_ms": {
+        "mean": 2424.4858,
+        "ci95": [
+          2361.4292,
+          2483.8262
+        ],
+        "p50": 2573.242,
+        "p95": 2604.519,
+        "std": 351.6203
+      },
+      "e2e_accum_ms": {
+        "mean": 3013.1146,
+        "ci95": [
+          2948.7729,
+          3073.423
+        ],
+        "p50": 3183.948,
+        "p95": 3272.373,
+        "std": 387.2374
+      },
+      "exact_match": {
+        "mean": 0.61,
+        "ci95": [
+          0.56,
+          0.67
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.7,
+        "ci95": [
+          0.64,
+          0.77
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.74,
+        "ci95": [
+          0.67,
+          0.81
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "paired_vs_full_history": {
+    "cmcp_r3": {
+      "input_tokens": {
+        "mean_diff": -71.58,
+        "ci95": [
+          -72.28,
+          -70.91
+        ]
+      },
+      "output_tokens": {
+        "mean_diff": 17.78,
+        "ci95": [
+          15.83,
+          19.65
+        ]
+      },
+      "prefill_ms": {
+        "mean_diff": -257.6032,
+        "ci95": [
+          -260.5874,
+          -254.6667
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": 442.11,
+        "ci95": [
+          363.6957,
+          516.3425
+        ]
+      },
+      "exact_match": {
+        "mean_diff": -0.01,
+        "ci95": [
+          -0.08,
+          0.06
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": -0.3,
+        "ci95": [
+          -0.36,
+          -0.23
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": -0.11,
+        "ci95": [
+          -0.2,
+          -0.02
+        ]
+      }
+    }
+  }
+}

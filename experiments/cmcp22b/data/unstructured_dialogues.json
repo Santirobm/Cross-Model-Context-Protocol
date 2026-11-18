@@ -1,0 +1,5342 @@
+[
+  {
+    "dialogue_id": "unstruct_00",
+    "domain": "cloud_infra",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for svc-100. Right now we're leaning toward PostgreSQL in us-east, and let's keep the rate cap under 400 req/s for safety. Ignore svc-100-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-100",
+            "value": "primary; region=us-east",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-100-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PostgreSQL",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=400",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from svc-100 flows through Redis and lands on us-east. Also tagged this batch as TK-10 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-100 -> Redis -> us-east",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-10",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Wait, scratch PostgreSQL\u2014it's overkill for this node. Let's switch from PostgreSQL to SQLite instead. Also forget the previous limit, we just got bumped and now the cap is 1200 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "SQLite",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1200",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Sorry for the noise, coffee just kicked in! One more thing: we're retiring TK-10 completely, no longer valid. Use TK-50 going forward, and reroute svc-100 -> Redis -> eu-west.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-50",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-100 -> Redis -> eu-west",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For svc-100 (ignoring svc-100-shadow), what is the final flow path (svc-100 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "svc-100",
+        "Redis",
+        "eu-west",
+        "SQLite",
+        "1200",
+        "TK-50"
+      ],
+      "expected_entities": [
+        "svc-100",
+        "Redis",
+        "eu-west"
+      ],
+      "forbidden_keywords": [
+        "PostgreSQL",
+        "us-east",
+        "400",
+        "TK-10"
+      ],
+      "expected_relations": [
+        "svc-100 -> Redis -> eu-west"
+      ],
+      "expected_constraints": [
+        "1200"
+      ],
+      "expected_decisions": [
+        "SQLite"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_01",
+    "domain": "ml_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for pipe-101. Right now we're leaning toward ONNX in cpu-avx, and let's keep the rate cap under 500 req/s for safety. Ignore pipe-101-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-101",
+            "value": "primary; region=cpu-avx",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-101-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "ONNX",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=500",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from pipe-101 flows through Celery and lands on cpu-avx. Also tagged this batch as TK-11 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-101 -> Celery -> cpu-avx",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-11",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Actually, drop ONNX and move to JAX for this service. Ignore the earlier cap\u2014bump it up to 1250 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "JAX",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1250",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Quick heads up: TK-11 is dead now, please replace it with TK-51. Also send pipe-101 traffic via Celery into tpu-v4 from now on.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-51",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-101 -> Celery -> tpu-v4",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For pipe-101 (ignoring pipe-101-shadow), what is the final flow path (pipe-101 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "pipe-101",
+        "Celery",
+        "tpu-v4",
+        "JAX",
+        "1250",
+        "TK-51"
+      ],
+      "expected_entities": [
+        "pipe-101",
+        "Celery",
+        "tpu-v4"
+      ],
+      "forbidden_keywords": [
+        "ONNX",
+        "cpu-avx",
+        "500",
+        "TK-11"
+      ],
+      "expected_relations": [
+        "pipe-101 -> Celery -> tpu-v4"
+      ],
+      "expected_constraints": [
+        "1250"
+      ],
+      "expected_decisions": [
+        "JAX"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_02",
+    "domain": "sec_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for vault-102. Right now we're leaning toward OIDC in gov-core, and let's keep the rate cap under 600 req/s for safety. Ignore vault-102-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-102",
+            "value": "primary; region=gov-core",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-102-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "OIDC",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=600",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from vault-102 flows through Vault and lands on gov-core. Also tagged this batch as TK-12 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-102 -> Vault -> gov-core",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-12",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Let's swap OIDC out for SAML, team agreed this morning. Oh, and the new ceiling is 1300 req/s instead of the old one.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "SAML",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1300",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Almost forgot\u2014cancel TK-12, we switched to TK-52. Update the path so vault-102 goes through Vault to prod-eu.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-52",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-102 -> Vault -> prod-eu",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For vault-102 (ignoring vault-102-shadow), what is the final flow path (vault-102 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "vault-102",
+        "Vault",
+        "prod-eu",
+        "SAML",
+        "1300",
+        "TK-52"
+      ],
+      "expected_entities": [
+        "vault-102",
+        "Vault",
+        "prod-eu"
+      ],
+      "forbidden_keywords": [
+        "OIDC",
+        "gov-core",
+        "600",
+        "TK-12"
+      ],
+      "expected_relations": [
+        "vault-102 -> Vault -> prod-eu"
+      ],
+      "expected_constraints": [
+        "1300"
+      ],
+      "expected_decisions": [
+        "SAML"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_03",
+    "domain": "cloud_infra",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for svc-103. Right now we're leaning toward MariaDB in us-east, and let's keep the rate cap under 700 req/s for safety. Ignore svc-103-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-103",
+            "value": "primary; region=us-east",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-103-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "MariaDB",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=700",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from svc-103 flows through Memcached and lands on us-east. Also tagged this batch as TK-13 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-103 -> Memcached -> us-east",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-13",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Wait, scratch MariaDB\u2014it's overkill for this node. Let's switch from MariaDB to PostgreSQL instead. Also forget the previous limit, we just got bumped and now the cap is 1350 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PostgreSQL",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1350",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Sorry for the noise, coffee just kicked in! One more thing: we're retiring TK-13 completely, no longer valid. Use TK-53 going forward, and reroute svc-103 -> Memcached -> eu-west.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-53",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-103 -> Memcached -> eu-west",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For svc-103 (ignoring svc-103-shadow), what is the final flow path (svc-103 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "svc-103",
+        "Memcached",
+        "eu-west",
+        "PostgreSQL",
+        "1350",
+        "TK-53"
+      ],
+      "expected_entities": [
+        "svc-103",
+        "Memcached",
+        "eu-west"
+      ],
+      "forbidden_keywords": [
+        "MariaDB",
+        "us-east",
+        "700",
+        "TK-13"
+      ],
+      "expected_relations": [
+        "svc-103 -> Memcached -> eu-west"
+      ],
+      "expected_constraints": [
+        "1350"
+      ],
+      "expected_decisions": [
+        "PostgreSQL"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_04",
+    "domain": "ml_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for pipe-104. Right now we're leaning toward PyTorch in cpu-avx, and let's keep the rate cap under 800 req/s for safety. Ignore pipe-104-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-104",
+            "value": "primary; region=cpu-avx",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-104-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PyTorch",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=800",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from pipe-104 flows through Ray and lands on cpu-avx. Also tagged this batch as TK-14 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-104 -> Ray -> cpu-avx",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-14",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Actually, drop PyTorch and move to ONNX for this service. Ignore the earlier cap\u2014bump it up to 1400 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "ONNX",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1400",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Quick heads up: TK-14 is dead now, please replace it with TK-54. Also send pipe-104 traffic via Ray into tpu-v4 from now on.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-54",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-104 -> Ray -> tpu-v4",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For pipe-104 (ignoring pipe-104-shadow), what is the final flow path (pipe-104 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "pipe-104",
+        "Ray",
+        "tpu-v4",
+        "ONNX",
+        "1400",
+        "TK-54"
+      ],
+      "expected_entities": [
+        "pipe-104",
+        "Ray",
+        "tpu-v4"
+      ],
+      "forbidden_keywords": [
+        "PyTorch",
+        "cpu-avx",
+        "800",
+        "TK-14"
+      ],
+      "expected_relations": [
+        "pipe-104 -> Ray -> tpu-v4"
+      ],
+      "expected_constraints": [
+        "1400"
+      ],
+      "expected_decisions": [
+        "ONNX"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_05",
+    "domain": "sec_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for vault-105. Right now we're leaning toward mTLS in gov-core, and let's keep the rate cap under 400 req/s for safety. Ignore vault-105-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-105",
+            "value": "primary; region=gov-core",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-105-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "mTLS",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=400",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from vault-105 flows through KMS and lands on gov-core. Also tagged this batch as TK-15 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-105 -> KMS -> gov-core",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-15",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Let's swap mTLS out for OIDC, team agreed this morning. Oh, and the new ceiling is 1450 req/s instead of the old one.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "OIDC",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1450",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Almost forgot\u2014cancel TK-15, we switched to TK-55. Update the path so vault-105 goes through KMS to prod-eu.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-55",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-105 -> KMS -> prod-eu",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For vault-105 (ignoring vault-105-shadow), what is the final flow path (vault-105 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "vault-105",
+        "KMS",
+        "prod-eu",
+        "OIDC",
+        "1450",
+        "TK-55"
+      ],
+      "expected_entities": [
+        "vault-105",
+        "KMS",
+        "prod-eu"
+      ],
+      "forbidden_keywords": [
+        "mTLS",
+        "gov-core",
+        "400",
+        "TK-15"
+      ],
+      "expected_relations": [
+        "vault-105 -> KMS -> prod-eu"
+      ],
+      "expected_constraints": [
+        "1450"
+      ],
+      "expected_decisions": [
+        "OIDC"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_06",
+    "domain": "cloud_infra",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for svc-106. Right now we're leaning toward DuckDB in us-east, and let's keep the rate cap under 500 req/s for safety. Ignore svc-106-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-106",
+            "value": "primary; region=us-east",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-106-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "DuckDB",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=500",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from svc-106 flows through Redis and lands on us-east. Also tagged this batch as TK-16 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-106 -> Redis -> us-east",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-16",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Wait, scratch DuckDB\u2014it's overkill for this node. Let's switch from DuckDB to MariaDB instead. Also forget the previous limit, we just got bumped and now the cap is 1500 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "MariaDB",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1500",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Sorry for the noise, coffee just kicked in! One more thing: we're retiring TK-16 completely, no longer valid. Use TK-56 going forward, and reroute svc-106 -> Redis -> eu-west.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-56",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-106 -> Redis -> eu-west",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For svc-106 (ignoring svc-106-shadow), what is the final flow path (svc-106 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "svc-106",
+        "Redis",
+        "eu-west",
+        "MariaDB",
+        "1500",
+        "TK-56"
+      ],
+      "expected_entities": [
+        "svc-106",
+        "Redis",
+        "eu-west"
+      ],
+      "forbidden_keywords": [
+        "DuckDB",
+        "us-east",
+        "500",
+        "TK-16"
+      ],
+      "expected_relations": [
+        "svc-106 -> Redis -> eu-west"
+      ],
+      "expected_constraints": [
+        "1500"
+      ],
+      "expected_decisions": [
+        "MariaDB"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_07",
+    "domain": "ml_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for pipe-107. Right now we're leaning toward TensorRT in cpu-avx, and let's keep the rate cap under 600 req/s for safety. Ignore pipe-107-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-107",
+            "value": "primary; region=cpu-avx",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-107-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "TensorRT",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=600",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from pipe-107 flows through Celery and lands on cpu-avx. Also tagged this batch as TK-17 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-107 -> Celery -> cpu-avx",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-17",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Actually, drop TensorRT and move to PyTorch for this service. Ignore the earlier cap\u2014bump it up to 1200 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PyTorch",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1200",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Quick heads up: TK-17 is dead now, please replace it with TK-57. Also send pipe-107 traffic via Celery into tpu-v4 from now on.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-57",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-107 -> Celery -> tpu-v4",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For pipe-107 (ignoring pipe-107-shadow), what is the final flow path (pipe-107 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "pipe-107",
+        "Celery",
+        "tpu-v4",
+        "PyTorch",
+        "1200",
+        "TK-57"
+      ],
+      "expected_entities": [
+        "pipe-107",
+        "Celery",
+        "tpu-v4"
+      ],
+      "forbidden_keywords": [
+        "TensorRT",
+        "cpu-avx",
+        "600",
+        "TK-17"
+      ],
+      "expected_relations": [
+        "pipe-107 -> Celery -> tpu-v4"
+      ],
+      "expected_constraints": [
+        "1200"
+      ],
+      "expected_decisions": [
+        "PyTorch"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_08",
+    "domain": "sec_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for vault-108. Right now we're leaning toward OAuth2 in gov-core, and let's keep the rate cap under 700 req/s for safety. Ignore vault-108-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-108",
+            "value": "primary; region=gov-core",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-108-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "OAuth2",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=700",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from vault-108 flows through Vault and lands on gov-core. Also tagged this batch as TK-18 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-108 -> Vault -> gov-core",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-18",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Let's swap OAuth2 out for mTLS, team agreed this morning. Oh, and the new ceiling is 1250 req/s instead of the old one.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "mTLS",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1250",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Almost forgot\u2014cancel TK-18, we switched to TK-58. Update the path so vault-108 goes through Vault to prod-eu.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-58",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-108 -> Vault -> prod-eu",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For vault-108 (ignoring vault-108-shadow), what is the final flow path (vault-108 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "vault-108",
+        "Vault",
+        "prod-eu",
+        "mTLS",
+        "1250",
+        "TK-58"
+      ],
+      "expected_entities": [
+        "vault-108",
+        "Vault",
+        "prod-eu"
+      ],
+      "forbidden_keywords": [
+        "OAuth2",
+        "gov-core",
+        "700",
+        "TK-18"
+      ],
+      "expected_relations": [
+        "vault-108 -> Vault -> prod-eu"
+      ],
+      "expected_constraints": [
+        "1250"
+      ],
+      "expected_decisions": [
+        "mTLS"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_09",
+    "domain": "cloud_infra",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for svc-109. Right now we're leaning toward SQLite in us-east, and let's keep the rate cap under 800 req/s for safety. Ignore svc-109-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-109",
+            "value": "primary; region=us-east",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-109-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "SQLite",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=800",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from svc-109 flows through Memcached and lands on us-east. Also tagged this batch as TK-19 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-109 -> Memcached -> us-east",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-19",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Wait, scratch SQLite\u2014it's overkill for this node. Let's switch from SQLite to DuckDB instead. Also forget the previous limit, we just got bumped and now the cap is 1300 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "DuckDB",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1300",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Sorry for the noise, coffee just kicked in! One more thing: we're retiring TK-19 completely, no longer valid. Use TK-59 going forward, and reroute svc-109 -> Memcached -> eu-west.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-59",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-109 -> Memcached -> eu-west",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For svc-109 (ignoring svc-109-shadow), what is the final flow path (svc-109 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "svc-109",
+        "Memcached",
+        "eu-west",
+        "DuckDB",
+        "1300",
+        "TK-59"
+      ],
+      "expected_entities": [
+        "svc-109",
+        "Memcached",
+        "eu-west"
+      ],
+      "forbidden_keywords": [
+        "SQLite",
+        "us-east",
+        "800",
+        "TK-19"
+      ],
+      "expected_relations": [
+        "svc-109 -> Memcached -> eu-west"
+      ],
+      "expected_constraints": [
+        "1300"
+      ],
+      "expected_decisions": [
+        "DuckDB"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_10",
+    "domain": "ml_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for pipe-110. Right now we're leaning toward JAX in cpu-avx, and let's keep the rate cap under 400 req/s for safety. Ignore pipe-110-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-110",
+            "value": "primary; region=cpu-avx",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-110-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "JAX",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=400",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from pipe-110 flows through Ray and lands on cpu-avx. Also tagged this batch as TK-20 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-110 -> Ray -> cpu-avx",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-20",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Actually, drop JAX and move to TensorRT for this service. Ignore the earlier cap\u2014bump it up to 1350 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "TensorRT",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1350",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Quick heads up: TK-20 is dead now, please replace it with TK-60. Also send pipe-110 traffic via Ray into tpu-v4 from now on.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-60",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-110 -> Ray -> tpu-v4",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For pipe-110 (ignoring pipe-110-shadow), what is the final flow path (pipe-110 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "pipe-110",
+        "Ray",
+        "tpu-v4",
+        "TensorRT",
+        "1350",
+        "TK-60"
+      ],
+      "expected_entities": [
+        "pipe-110",
+        "Ray",
+        "tpu-v4"
+      ],
+      "forbidden_keywords": [
+        "JAX",
+        "cpu-avx",
+        "400",
+        "TK-20"
+      ],
+      "expected_relations": [
+        "pipe-110 -> Ray -> tpu-v4"
+      ],
+      "expected_constraints": [
+        "1350"
+      ],
+      "expected_decisions": [
+        "TensorRT"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_11",
+    "domain": "sec_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for vault-111. Right now we're leaning toward SAML in gov-core, and let's keep the rate cap under 500 req/s for safety. Ignore vault-111-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-111",
+            "value": "primary; region=gov-core",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-111-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "SAML",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=500",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from vault-111 flows through KMS and lands on gov-core. Also tagged this batch as TK-21 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-111 -> KMS -> gov-core",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-21",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Let's swap SAML out for OAuth2, team agreed this morning. Oh, and the new ceiling is 1400 req/s instead of the old one.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "OAuth2",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1400",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Almost forgot\u2014cancel TK-21, we switched to TK-61. Update the path so vault-111 goes through KMS to prod-eu.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-61",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-111 -> KMS -> prod-eu",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For vault-111 (ignoring vault-111-shadow), what is the final flow path (vault-111 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "vault-111",
+        "KMS",
+        "prod-eu",
+        "OAuth2",
+        "1400",
+        "TK-61"
+      ],
+      "expected_entities": [
+        "vault-111",
+        "KMS",
+        "prod-eu"
+      ],
+      "forbidden_keywords": [
+        "SAML",
+        "gov-core",
+        "500",
+        "TK-21"
+      ],
+      "expected_relations": [
+        "vault-111 -> KMS -> prod-eu"
+      ],
+      "expected_constraints": [
+        "1400"
+      ],
+      "expected_decisions": [
+        "OAuth2"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_12",
+    "domain": "cloud_infra",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for svc-112. Right now we're leaning toward PostgreSQL in us-east, and let's keep the rate cap under 600 req/s for safety. Ignore svc-112-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-112",
+            "value": "primary; region=us-east",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-112-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PostgreSQL",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=600",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from svc-112 flows through Redis and lands on us-east. Also tagged this batch as TK-22 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-112 -> Redis -> us-east",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-22",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Wait, scratch PostgreSQL\u2014it's overkill for this node. Let's switch from PostgreSQL to SQLite instead. Also forget the previous limit, we just got bumped and now the cap is 1450 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "SQLite",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1450",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Sorry for the noise, coffee just kicked in! One more thing: we're retiring TK-22 completely, no longer valid. Use TK-62 going forward, and reroute svc-112 -> Redis -> eu-west.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-62",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-112 -> Redis -> eu-west",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For svc-112 (ignoring svc-112-shadow), what is the final flow path (svc-112 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "svc-112",
+        "Redis",
+        "eu-west",
+        "SQLite",
+        "1450",
+        "TK-62"
+      ],
+      "expected_entities": [
+        "svc-112",
+        "Redis",
+        "eu-west"
+      ],
+      "forbidden_keywords": [
+        "PostgreSQL",
+        "us-east",
+        "600",
+        "TK-22"
+      ],
+      "expected_relations": [
+        "svc-112 -> Redis -> eu-west"
+      ],
+      "expected_constraints": [
+        "1450"
+      ],
+      "expected_decisions": [
+        "SQLite"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_13",
+    "domain": "ml_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for pipe-113. Right now we're leaning toward ONNX in cpu-avx, and let's keep the rate cap under 700 req/s for safety. Ignore pipe-113-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-113",
+            "value": "primary; region=cpu-avx",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-113-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "ONNX",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=700",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from pipe-113 flows through Celery and lands on cpu-avx. Also tagged this batch as TK-23 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-113 -> Celery -> cpu-avx",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-23",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Actually, drop ONNX and move to JAX for this service. Ignore the earlier cap\u2014bump it up to 1500 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "JAX",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1500",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Quick heads up: TK-23 is dead now, please replace it with TK-63. Also send pipe-113 traffic via Celery into tpu-v4 from now on.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-63",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-113 -> Celery -> tpu-v4",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For pipe-113 (ignoring pipe-113-shadow), what is the final flow path (pipe-113 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "pipe-113",
+        "Celery",
+        "tpu-v4",
+        "JAX",
+        "1500",
+        "TK-63"
+      ],
+      "expected_entities": [
+        "pipe-113",
+        "Celery",
+        "tpu-v4"
+      ],
+      "forbidden_keywords": [
+        "ONNX",
+        "cpu-avx",
+        "700",
+        "TK-23"
+      ],
+      "expected_relations": [
+        "pipe-113 -> Celery -> tpu-v4"
+      ],
+      "expected_constraints": [
+        "1500"
+      ],
+      "expected_decisions": [
+        "JAX"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_14",
+    "domain": "sec_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for vault-114. Right now we're leaning toward OIDC in gov-core, and let's keep the rate cap under 800 req/s for safety. Ignore vault-114-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-114",
+            "value": "primary; region=gov-core",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-114-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "OIDC",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=800",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from vault-114 flows through Vault and lands on gov-core. Also tagged this batch as TK-24 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-114 -> Vault -> gov-core",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-24",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Let's swap OIDC out for SAML, team agreed this morning. Oh, and the new ceiling is 1200 req/s instead of the old one.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "SAML",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1200",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Almost forgot\u2014cancel TK-24, we switched to TK-64. Update the path so vault-114 goes through Vault to prod-eu.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-64",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-114 -> Vault -> prod-eu",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For vault-114 (ignoring vault-114-shadow), what is the final flow path (vault-114 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "vault-114",
+        "Vault",
+        "prod-eu",
+        "SAML",
+        "1200",
+        "TK-64"
+      ],
+      "expected_entities": [
+        "vault-114",
+        "Vault",
+        "prod-eu"
+      ],
+      "forbidden_keywords": [
+        "OIDC",
+        "gov-core",
+        "800",
+        "TK-24"
+      ],
+      "expected_relations": [
+        "vault-114 -> Vault -> prod-eu"
+      ],
+      "expected_constraints": [
+        "1200"
+      ],
+      "expected_decisions": [
+        "SAML"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_15",
+    "domain": "cloud_infra",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for svc-115. Right now we're leaning toward MariaDB in us-east, and let's keep the rate cap under 400 req/s for safety. Ignore svc-115-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-115",
+            "value": "primary; region=us-east",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-115-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "MariaDB",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=400",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from svc-115 flows through Memcached and lands on us-east. Also tagged this batch as TK-25 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-115 -> Memcached -> us-east",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-25",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Wait, scratch MariaDB\u2014it's overkill for this node. Let's switch from MariaDB to PostgreSQL instead. Also forget the previous limit, we just got bumped and now the cap is 1250 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PostgreSQL",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1250",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Sorry for the noise, coffee just kicked in! One more thing: we're retiring TK-25 completely, no longer valid. Use TK-65 going forward, and reroute svc-115 -> Memcached -> eu-west.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-65",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-115 -> Memcached -> eu-west",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For svc-115 (ignoring svc-115-shadow), what is the final flow path (svc-115 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "svc-115",
+        "Memcached",
+        "eu-west",
+        "PostgreSQL",
+        "1250",
+        "TK-65"
+      ],
+      "expected_entities": [
+        "svc-115",
+        "Memcached",
+        "eu-west"
+      ],
+      "forbidden_keywords": [
+        "MariaDB",
+        "us-east",
+        "400",
+        "TK-25"
+      ],
+      "expected_relations": [
+        "svc-115 -> Memcached -> eu-west"
+      ],
+      "expected_constraints": [
+        "1250"
+      ],
+      "expected_decisions": [
+        "PostgreSQL"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_16",
+    "domain": "ml_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for pipe-116. Right now we're leaning toward PyTorch in cpu-avx, and let's keep the rate cap under 500 req/s for safety. Ignore pipe-116-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-116",
+            "value": "primary; region=cpu-avx",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-116-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PyTorch",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=500",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from pipe-116 flows through Ray and lands on cpu-avx. Also tagged this batch as TK-26 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-116 -> Ray -> cpu-avx",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-26",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Actually, drop PyTorch and move to ONNX for this service. Ignore the earlier cap\u2014bump it up to 1300 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "ONNX",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1300",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Quick heads up: TK-26 is dead now, please replace it with TK-66. Also send pipe-116 traffic via Ray into tpu-v4 from now on.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-66",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-116 -> Ray -> tpu-v4",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For pipe-116 (ignoring pipe-116-shadow), what is the final flow path (pipe-116 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "pipe-116",
+        "Ray",
+        "tpu-v4",
+        "ONNX",
+        "1300",
+        "TK-66"
+      ],
+      "expected_entities": [
+        "pipe-116",
+        "Ray",
+        "tpu-v4"
+      ],
+      "forbidden_keywords": [
+        "PyTorch",
+        "cpu-avx",
+        "500",
+        "TK-26"
+      ],
+      "expected_relations": [
+        "pipe-116 -> Ray -> tpu-v4"
+      ],
+      "expected_constraints": [
+        "1300"
+      ],
+      "expected_decisions": [
+        "ONNX"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_17",
+    "domain": "sec_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for vault-117. Right now we're leaning toward mTLS in gov-core, and let's keep the rate cap under 600 req/s for safety. Ignore vault-117-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-117",
+            "value": "primary; region=gov-core",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-117-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "mTLS",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=600",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from vault-117 flows through KMS and lands on gov-core. Also tagged this batch as TK-27 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-117 -> KMS -> gov-core",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-27",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Let's swap mTLS out for OIDC, team agreed this morning. Oh, and the new ceiling is 1350 req/s instead of the old one.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "OIDC",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1350",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Almost forgot\u2014cancel TK-27, we switched to TK-67. Update the path so vault-117 goes through KMS to prod-eu.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-67",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-117 -> KMS -> prod-eu",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For vault-117 (ignoring vault-117-shadow), what is the final flow path (vault-117 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "vault-117",
+        "KMS",
+        "prod-eu",
+        "OIDC",
+        "1350",
+        "TK-67"
+      ],
+      "expected_entities": [
+        "vault-117",
+        "KMS",
+        "prod-eu"
+      ],
+      "forbidden_keywords": [
+        "mTLS",
+        "gov-core",
+        "600",
+        "TK-27"
+      ],
+      "expected_relations": [
+        "vault-117 -> KMS -> prod-eu"
+      ],
+      "expected_constraints": [
+        "1350"
+      ],
+      "expected_decisions": [
+        "OIDC"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_18",
+    "domain": "cloud_infra",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for svc-118. Right now we're leaning toward DuckDB in us-east, and let's keep the rate cap under 700 req/s for safety. Ignore svc-118-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-118",
+            "value": "primary; region=us-east",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-118-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "DuckDB",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=700",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from svc-118 flows through Redis and lands on us-east. Also tagged this batch as TK-28 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-118 -> Redis -> us-east",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-28",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Wait, scratch DuckDB\u2014it's overkill for this node. Let's switch from DuckDB to MariaDB instead. Also forget the previous limit, we just got bumped and now the cap is 1400 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "MariaDB",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1400",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Sorry for the noise, coffee just kicked in! One more thing: we're retiring TK-28 completely, no longer valid. Use TK-68 going forward, and reroute svc-118 -> Redis -> eu-west.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-68",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-118 -> Redis -> eu-west",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For svc-118 (ignoring svc-118-shadow), what is the final flow path (svc-118 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "svc-118",
+        "Redis",
+        "eu-west",
+        "MariaDB",
+        "1400",
+        "TK-68"
+      ],
+      "expected_entities": [
+        "svc-118",
+        "Redis",
+        "eu-west"
+      ],
+      "forbidden_keywords": [
+        "DuckDB",
+        "us-east",
+        "700",
+        "TK-28"
+      ],
+      "expected_relations": [
+        "svc-118 -> Redis -> eu-west"
+      ],
+      "expected_constraints": [
+        "1400"
+      ],
+      "expected_decisions": [
+        "MariaDB"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_19",
+    "domain": "ml_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for pipe-119. Right now we're leaning toward TensorRT in cpu-avx, and let's keep the rate cap under 800 req/s for safety. Ignore pipe-119-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-119",
+            "value": "primary; region=cpu-avx",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-119-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "TensorRT",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=800",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from pipe-119 flows through Celery and lands on cpu-avx. Also tagged this batch as TK-29 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-119 -> Celery -> cpu-avx",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-29",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Actually, drop TensorRT and move to PyTorch for this service. Ignore the earlier cap\u2014bump it up to 1450 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PyTorch",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1450",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Quick heads up: TK-29 is dead now, please replace it with TK-69. Also send pipe-119 traffic via Celery into tpu-v4 from now on.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-69",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-119 -> Celery -> tpu-v4",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For pipe-119 (ignoring pipe-119-shadow), what is the final flow path (pipe-119 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "pipe-119",
+        "Celery",
+        "tpu-v4",
+        "PyTorch",
+        "1450",
+        "TK-69"
+      ],
+      "expected_entities": [
+        "pipe-119",
+        "Celery",
+        "tpu-v4"
+      ],
+      "forbidden_keywords": [
+        "TensorRT",
+        "cpu-avx",
+        "800",
+        "TK-29"
+      ],
+      "expected_relations": [
+        "pipe-119 -> Celery -> tpu-v4"
+      ],
+      "expected_constraints": [
+        "1450"
+      ],
+      "expected_decisions": [
+        "PyTorch"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_20",
+    "domain": "sec_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for vault-120. Right now we're leaning toward OAuth2 in gov-core, and let's keep the rate cap under 400 req/s for safety. Ignore vault-120-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-120",
+            "value": "primary; region=gov-core",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-120-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "OAuth2",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=400",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from vault-120 flows through Vault and lands on gov-core. Also tagged this batch as TK-30 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-120 -> Vault -> gov-core",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-30",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Let's swap OAuth2 out for mTLS, team agreed this morning. Oh, and the new ceiling is 1500 req/s instead of the old one.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "mTLS",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1500",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Almost forgot\u2014cancel TK-30, we switched to TK-70. Update the path so vault-120 goes through Vault to prod-eu.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-70",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-120 -> Vault -> prod-eu",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For vault-120 (ignoring vault-120-shadow), what is the final flow path (vault-120 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "vault-120",
+        "Vault",
+        "prod-eu",
+        "mTLS",
+        "1500",
+        "TK-70"
+      ],
+      "expected_entities": [
+        "vault-120",
+        "Vault",
+        "prod-eu"
+      ],
+      "forbidden_keywords": [
+        "OAuth2",
+        "gov-core",
+        "400",
+        "TK-30"
+      ],
+      "expected_relations": [
+        "vault-120 -> Vault -> prod-eu"
+      ],
+      "expected_constraints": [
+        "1500"
+      ],
+      "expected_decisions": [
+        "mTLS"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_21",
+    "domain": "cloud_infra",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for svc-121. Right now we're leaning toward SQLite in us-east, and let's keep the rate cap under 500 req/s for safety. Ignore svc-121-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-121",
+            "value": "primary; region=us-east",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-121-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "SQLite",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=500",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from svc-121 flows through Memcached and lands on us-east. Also tagged this batch as TK-31 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-121 -> Memcached -> us-east",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-31",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Wait, scratch SQLite\u2014it's overkill for this node. Let's switch from SQLite to DuckDB instead. Also forget the previous limit, we just got bumped and now the cap is 1200 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "DuckDB",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1200",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Sorry for the noise, coffee just kicked in! One more thing: we're retiring TK-31 completely, no longer valid. Use TK-71 going forward, and reroute svc-121 -> Memcached -> eu-west.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-71",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-121 -> Memcached -> eu-west",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For svc-121 (ignoring svc-121-shadow), what is the final flow path (svc-121 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "svc-121",
+        "Memcached",
+        "eu-west",
+        "DuckDB",
+        "1200",
+        "TK-71"
+      ],
+      "expected_entities": [
+        "svc-121",
+        "Memcached",
+        "eu-west"
+      ],
+      "forbidden_keywords": [
+        "SQLite",
+        "us-east",
+        "500",
+        "TK-31"
+      ],
+      "expected_relations": [
+        "svc-121 -> Memcached -> eu-west"
+      ],
+      "expected_constraints": [
+        "1200"
+      ],
+      "expected_decisions": [
+        "DuckDB"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_22",
+    "domain": "ml_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for pipe-122. Right now we're leaning toward JAX in cpu-avx, and let's keep the rate cap under 600 req/s for safety. Ignore pipe-122-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-122",
+            "value": "primary; region=cpu-avx",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-122-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "JAX",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=600",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from pipe-122 flows through Ray and lands on cpu-avx. Also tagged this batch as TK-32 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-122 -> Ray -> cpu-avx",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-32",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Actually, drop JAX and move to TensorRT for this service. Ignore the earlier cap\u2014bump it up to 1250 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "TensorRT",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1250",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Quick heads up: TK-32 is dead now, please replace it with TK-72. Also send pipe-122 traffic via Ray into tpu-v4 from now on.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-72",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-122 -> Ray -> tpu-v4",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For pipe-122 (ignoring pipe-122-shadow), what is the final flow path (pipe-122 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "pipe-122",
+        "Ray",
+        "tpu-v4",
+        "TensorRT",
+        "1250",
+        "TK-72"
+      ],
+      "expected_entities": [
+        "pipe-122",
+        "Ray",
+        "tpu-v4"
+      ],
+      "forbidden_keywords": [
+        "JAX",
+        "cpu-avx",
+        "600",
+        "TK-32"
+      ],
+      "expected_relations": [
+        "pipe-122 -> Ray -> tpu-v4"
+      ],
+      "expected_constraints": [
+        "1250"
+      ],
+      "expected_decisions": [
+        "TensorRT"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_23",
+    "domain": "sec_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for vault-123. Right now we're leaning toward SAML in gov-core, and let's keep the rate cap under 700 req/s for safety. Ignore vault-123-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-123",
+            "value": "primary; region=gov-core",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-123-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "SAML",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=700",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from vault-123 flows through KMS and lands on gov-core. Also tagged this batch as TK-33 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-123 -> KMS -> gov-core",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-33",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Let's swap SAML out for OAuth2, team agreed this morning. Oh, and the new ceiling is 1300 req/s instead of the old one.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "OAuth2",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1300",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Almost forgot\u2014cancel TK-33, we switched to TK-73. Update the path so vault-123 goes through KMS to prod-eu.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-73",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-123 -> KMS -> prod-eu",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For vault-123 (ignoring vault-123-shadow), what is the final flow path (vault-123 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "vault-123",
+        "KMS",
+        "prod-eu",
+        "OAuth2",
+        "1300",
+        "TK-73"
+      ],
+      "expected_entities": [
+        "vault-123",
+        "KMS",
+        "prod-eu"
+      ],
+      "forbidden_keywords": [
+        "SAML",
+        "gov-core",
+        "700",
+        "TK-33"
+      ],
+      "expected_relations": [
+        "vault-123 -> KMS -> prod-eu"
+      ],
+      "expected_constraints": [
+        "1300"
+      ],
+      "expected_decisions": [
+        "OAuth2"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_24",
+    "domain": "cloud_infra",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for svc-124. Right now we're leaning toward PostgreSQL in us-east, and let's keep the rate cap under 800 req/s for safety. Ignore svc-124-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-124",
+            "value": "primary; region=us-east",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-124-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PostgreSQL",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=800",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from svc-124 flows through Redis and lands on us-east. Also tagged this batch as TK-34 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-124 -> Redis -> us-east",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-34",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Wait, scratch PostgreSQL\u2014it's overkill for this node. Let's switch from PostgreSQL to SQLite instead. Also forget the previous limit, we just got bumped and now the cap is 1350 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "SQLite",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1350",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Sorry for the noise, coffee just kicked in! One more thing: we're retiring TK-34 completely, no longer valid. Use TK-74 going forward, and reroute svc-124 -> Redis -> eu-west.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-74",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-124 -> Redis -> eu-west",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For svc-124 (ignoring svc-124-shadow), what is the final flow path (svc-124 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "svc-124",
+        "Redis",
+        "eu-west",
+        "SQLite",
+        "1350",
+        "TK-74"
+      ],
+      "expected_entities": [
+        "svc-124",
+        "Redis",
+        "eu-west"
+      ],
+      "forbidden_keywords": [
+        "PostgreSQL",
+        "us-east",
+        "800",
+        "TK-34"
+      ],
+      "expected_relations": [
+        "svc-124 -> Redis -> eu-west"
+      ],
+      "expected_constraints": [
+        "1350"
+      ],
+      "expected_decisions": [
+        "SQLite"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_25",
+    "domain": "ml_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for pipe-125. Right now we're leaning toward ONNX in cpu-avx, and let's keep the rate cap under 400 req/s for safety. Ignore pipe-125-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-125",
+            "value": "primary; region=cpu-avx",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-125-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "ONNX",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=400",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from pipe-125 flows through Celery and lands on cpu-avx. Also tagged this batch as TK-35 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-125 -> Celery -> cpu-avx",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-35",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Actually, drop ONNX and move to JAX for this service. Ignore the earlier cap\u2014bump it up to 1400 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "JAX",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1400",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Quick heads up: TK-35 is dead now, please replace it with TK-75. Also send pipe-125 traffic via Celery into tpu-v4 from now on.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-75",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-125 -> Celery -> tpu-v4",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For pipe-125 (ignoring pipe-125-shadow), what is the final flow path (pipe-125 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "pipe-125",
+        "Celery",
+        "tpu-v4",
+        "JAX",
+        "1400",
+        "TK-75"
+      ],
+      "expected_entities": [
+        "pipe-125",
+        "Celery",
+        "tpu-v4"
+      ],
+      "forbidden_keywords": [
+        "ONNX",
+        "cpu-avx",
+        "400",
+        "TK-35"
+      ],
+      "expected_relations": [
+        "pipe-125 -> Celery -> tpu-v4"
+      ],
+      "expected_constraints": [
+        "1400"
+      ],
+      "expected_decisions": [
+        "JAX"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_26",
+    "domain": "sec_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for vault-126. Right now we're leaning toward OIDC in gov-core, and let's keep the rate cap under 500 req/s for safety. Ignore vault-126-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-126",
+            "value": "primary; region=gov-core",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-126-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "OIDC",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=500",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from vault-126 flows through Vault and lands on gov-core. Also tagged this batch as TK-36 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-126 -> Vault -> gov-core",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-36",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Let's swap OIDC out for SAML, team agreed this morning. Oh, and the new ceiling is 1450 req/s instead of the old one.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "SAML",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1450",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Almost forgot\u2014cancel TK-36, we switched to TK-76. Update the path so vault-126 goes through Vault to prod-eu.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-76",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-126 -> Vault -> prod-eu",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For vault-126 (ignoring vault-126-shadow), what is the final flow path (vault-126 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "vault-126",
+        "Vault",
+        "prod-eu",
+        "SAML",
+        "1450",
+        "TK-76"
+      ],
+      "expected_entities": [
+        "vault-126",
+        "Vault",
+        "prod-eu"
+      ],
+      "forbidden_keywords": [
+        "OIDC",
+        "gov-core",
+        "500",
+        "TK-36"
+      ],
+      "expected_relations": [
+        "vault-126 -> Vault -> prod-eu"
+      ],
+      "expected_constraints": [
+        "1450"
+      ],
+      "expected_decisions": [
+        "SAML"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_27",
+    "domain": "cloud_infra",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for svc-127. Right now we're leaning toward MariaDB in us-east, and let's keep the rate cap under 600 req/s for safety. Ignore svc-127-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-127",
+            "value": "primary; region=us-east",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "svc-127-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "MariaDB",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=600",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from svc-127 flows through Memcached and lands on us-east. Also tagged this batch as TK-37 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-127 -> Memcached -> us-east",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-37",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Wait, scratch MariaDB\u2014it's overkill for this node. Let's switch from MariaDB to PostgreSQL instead. Also forget the previous limit, we just got bumped and now the cap is 1500 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PostgreSQL",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1500",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Sorry for the noise, coffee just kicked in! One more thing: we're retiring TK-37 completely, no longer valid. Use TK-77 going forward, and reroute svc-127 -> Memcached -> eu-west.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-77",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "svc-127 -> Memcached -> eu-west",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For svc-127 (ignoring svc-127-shadow), what is the final flow path (svc-127 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "svc-127",
+        "Memcached",
+        "eu-west",
+        "PostgreSQL",
+        "1500",
+        "TK-77"
+      ],
+      "expected_entities": [
+        "svc-127",
+        "Memcached",
+        "eu-west"
+      ],
+      "forbidden_keywords": [
+        "MariaDB",
+        "us-east",
+        "600",
+        "TK-37"
+      ],
+      "expected_relations": [
+        "svc-127 -> Memcached -> eu-west"
+      ],
+      "expected_constraints": [
+        "1500"
+      ],
+      "expected_decisions": [
+        "PostgreSQL"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_28",
+    "domain": "ml_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for pipe-128. Right now we're leaning toward PyTorch in cpu-avx, and let's keep the rate cap under 700 req/s for safety. Ignore pipe-128-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-128",
+            "value": "primary; region=cpu-avx",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "pipe-128-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "PyTorch",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=700",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from pipe-128 flows through Ray and lands on cpu-avx. Also tagged this batch as TK-38 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-128 -> Ray -> cpu-avx",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-38",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Actually, drop PyTorch and move to ONNX for this service. Ignore the earlier cap\u2014bump it up to 1200 req/s.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "ONNX",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1200",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Quick heads up: TK-38 is dead now, please replace it with TK-78. Also send pipe-128 traffic via Ray into tpu-v4 from now on.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-78",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "pipe-128 -> Ray -> tpu-v4",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For pipe-128 (ignoring pipe-128-shadow), what is the final flow path (pipe-128 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "pipe-128",
+        "Ray",
+        "tpu-v4",
+        "ONNX",
+        "1200",
+        "TK-78"
+      ],
+      "expected_entities": [
+        "pipe-128",
+        "Ray",
+        "tpu-v4"
+      ],
+      "forbidden_keywords": [
+        "PyTorch",
+        "cpu-avx",
+        "700",
+        "TK-38"
+      ],
+      "expected_relations": [
+        "pipe-128 -> Ray -> tpu-v4"
+      ],
+      "expected_constraints": [
+        "1200"
+      ],
+      "expected_decisions": [
+        "ONNX"
+      ]
+    }
+  },
+  {
+    "dialogue_id": "unstruct_29",
+    "domain": "sec_ops",
+    "turns": [
+      {
+        "turn_id": 1,
+        "speaker": "agent_a",
+        "utterance": "Hey team, quick kickoff for vault-129. Right now we're leaning toward mTLS in gov-core, and let's keep the rate cap under 800 req/s for safety. Ignore vault-129-shadow for now, that's just a staging sandbox.",
+        "gold_ops": [
+          {
+            "fact_id": "primary_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-129",
+            "value": "primary; region=gov-core",
+            "seq": 1
+          },
+          {
+            "fact_id": "alt_unit",
+            "kind": "UPSERT",
+            "category": "entity",
+            "key": "vault-129-shadow",
+            "value": "staging_sandbox_ignore",
+            "seq": 2
+          },
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "mTLS",
+            "seq": 3
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=800",
+            "seq": 4
+          }
+        ]
+      },
+      {
+        "turn_id": 2,
+        "speaker": "agent_a",
+        "utterance": "Oh, before I forget, traffic from vault-129 flows through KMS and lands on gov-core. Also tagged this batch as TK-39 in case anyone checks.",
+        "gold_ops": [
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-129 -> KMS -> gov-core",
+            "seq": 5
+          },
+          {
+            "fact_id": "batch_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "TK-39",
+            "seq": 6
+          }
+        ]
+      },
+      {
+        "turn_id": 3,
+        "speaker": "agent_a",
+        "utterance": "Let's swap mTLS out for OIDC, team agreed this morning. Oh, and the new ceiling is 1250 req/s instead of the old one.",
+        "gold_ops": [
+          {
+            "fact_id": "backend_db",
+            "kind": "UPSERT",
+            "category": "decision",
+            "key": "backend",
+            "value": "OIDC",
+            "seq": 7
+          },
+          {
+            "fact_id": "rate_limit",
+            "kind": "UPSERT",
+            "category": "constraint",
+            "key": "rate_limit",
+            "value": "rate_limit<=1250",
+            "seq": 8
+          }
+        ]
+      },
+      {
+        "turn_id": 4,
+        "speaker": "agent_b",
+        "utterance": "Got it, thanks for the heads up. Checking the handoff state now.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 5,
+        "speaker": "agent_a",
+        "utterance": "Almost forgot\u2014cancel TK-39, we switched to TK-79. Update the path so vault-129 goes through KMS to prod-eu.",
+        "gold_ops": [
+          {
+            "fact_id": "batch_tag",
+            "kind": "INVALIDATE",
+            "category": "fact",
+            "key": "batch_tag",
+            "value": "",
+            "seq": 9
+          },
+          {
+            "fact_id": "active_tag",
+            "kind": "UPSERT",
+            "category": "fact",
+            "key": "active_tag",
+            "value": "TK-79",
+            "seq": 10
+          },
+          {
+            "fact_id": "rel_flow",
+            "kind": "UPSERT",
+            "category": "relation",
+            "key": "flow",
+            "value": "vault-129 -> KMS -> prod-eu",
+            "seq": 11
+          }
+        ]
+      },
+      {
+        "turn_id": 6,
+        "speaker": "agent_b",
+        "utterance": "Understood, noted the reroute and new tag.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 7,
+        "speaker": "agent_a",
+        "utterance": "Looks good on my end too. No other changes before final sign-off.",
+        "gold_ops": []
+      },
+      {
+        "turn_id": 8,
+        "speaker": "agent_b",
+        "utterance": "Ready for the final composite summary.",
+        "gold_ops": []
+      }
+    ],
+    "eval_query": {
+      "turn": 8,
+      "query": "For vault-129 (ignoring vault-129-shadow), what is the final flow path (vault-129 -> ... -> ...), chosen backend, active rate limit, and active batch tag?",
+      "expected_keywords": [
+        "vault-129",
+        "KMS",
+        "prod-eu",
+        "OIDC",
+        "1250",
+        "TK-79"
+      ],
+      "expected_entities": [
+        "vault-129",
+        "KMS",
+        "prod-eu"
+      ],
+      "forbidden_keywords": [
+        "mTLS",
+        "gov-core",
+        "800",
+        "TK-39"
+      ],
+      "expected_relations": [
+        "vault-129 -> KMS -> prod-eu"
+      ],
+      "expected_constraints": [
+        "1250"
+      ],
+      "expected_decisions": [
+        "OIDC"
+      ]
+    }
+  }
+]

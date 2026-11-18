@@ -198,11 +198,64 @@ class CMCPStateStore:
             if not e.tombstone
         }
 
-    def render_for_llm(self) -> str:
+    def render_for_llm(self, style: str = "r1") -> str:
         """Render active state preserving entities, ternary relations, constraints, and decisions."""
-        lines: List[str] = []
         active = self.active_view()
-        for fid, item in active.items():
+        if style == "r2":
+            ents, rels, cons, decs, facts = [], [], [], [], []
+            for _, item in active.items():
+                cat, k, v = item["category"], item["key"], item["value"]
+                if cat == "entity":
+                    ents.append(f"{k} ({v})")
+                elif cat == "relation":
+                    rels.append(v)
+                elif cat == "constraint":
+                    cons.append(v)
+                elif cat == "decision":
+                    decs.append(v if v.startswith(f"{k}=") else f"{k}={v}")
+                else:
+                    facts.append(f"{k} is {v}")
+            parts: List[str] = []
+            if rels:
+                parts.append("Active path: " + "; ".join(rels) + ".")
+            if ents:
+                parts.append("Entities: " + "; ".join(ents) + ".")
+            if cons:
+                parts.append("Active constraints: " + "; ".join(cons) + ".")
+            if decs:
+                parts.append("Active decisions: " + "; ".join(decs) + ".")
+            if facts:
+                parts.append("Current facts: " + "; ".join(facts) + ".")
+            return "\n".join(parts)
+
+        if style == "r3":
+            buckets: Dict[str, List[str]] = {
+                "relations": [],
+                "entities": [],
+                "constraints": [],
+                "decisions": [],
+                "facts": [],
+            }
+            for _, item in active.items():
+                cat, k, v = item["category"], item["key"], item["value"]
+                if cat == "relation":
+                    buckets["relations"].append(f"- {v}")
+                elif cat == "entity":
+                    buckets["entities"].append(f"- {k}: {v}")
+                elif cat == "constraint":
+                    buckets["constraints"].append(f"- {v}")
+                elif cat == "decision":
+                    buckets["decisions"].append(f"- {v if v.startswith(f'{k}=') else f'{k}={v}'}")
+                else:
+                    buckets["facts"].append(f"- {k}: {v}")
+            sections: List[str] = []
+            for tag in ("relations", "entities", "constraints", "decisions", "facts"):
+                if buckets[tag]:
+                    sections.append(f"<{tag}>\n" + "\n".join(buckets[tag]) + f"\n</{tag}>")
+            return "\n".join(sections)
+
+        lines: List[str] = []
+        for _, item in active.items():
             cat = item["category"]
             k = item["key"]
             v = item["value"]

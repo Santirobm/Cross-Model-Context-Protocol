@@ -1,0 +1,541 @@
+{
+  "config": {
+    "num_dialogues": 30,
+    "reps": 1,
+    "max_tokens": 64,
+    "style": "r3",
+    "model_a_name": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+    "model_b_name": "Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+    "tag": "unstruct_v1",
+    "bootstrap_seed": 42,
+    "methods": [
+      "oracle_structured",
+      "deterministic_nlp_rules",
+      "hybrid_gated",
+      "full_history_baseline"
+    ]
+  },
+  "methods": {
+    "oracle_structured": {
+      "n_dialogues": 30,
+      "n_rows": 30,
+      "wire_bytes": {
+        "mean": 254.9667,
+        "ci95": [
+          253.8333,
+          256.2008
+        ]
+      },
+      "input_tokens": {
+        "mean": 140.9667,
+        "ci95": [
+          140.2,
+          141.7667
+        ]
+      },
+      "output_tokens": {
+        "mean": 55.7,
+        "ci95": [
+          50.4333,
+          60.5008
+        ]
+      },
+      "extract_ms": {
+        "mean": 0.0385,
+        "ci95": [
+          0.038,
+          0.039
+        ]
+      },
+      "prefill_ms": {
+        "mean": 510.977,
+        "ci95": [
+          507.5721,
+          514.327
+        ]
+      },
+      "decode_ms": {
+        "mean": 2229.0134,
+        "ci95": [
+          2018.8131,
+          2421.6618
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean": 2740.5009,
+        "ci95": [
+          2532.1829,
+          2931.6368
+        ]
+      },
+      "state_precision": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "state_recall": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "obsolete_pruning_accuracy": {
+        "mean": 0.7333,
+        "ci95": [
+          0.7083,
+          0.75
+        ]
+      },
+      "exact_match": {
+        "mean": 0.2667,
+        "ci95": [
+          0.1333,
+          0.4333
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.1333,
+        "ci95": [
+          0.0333,
+          0.2667
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.9,
+        "ci95": [
+          0.7667,
+          1.0
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.0667,
+        "ci95": [
+          0.0,
+          0.1667
+        ]
+      }
+    },
+    "deterministic_nlp_rules": {
+      "n_dialogues": 30,
+      "n_rows": 30,
+      "wire_bytes": {
+        "mean": 258.3,
+        "ci95": [
+          257.1,
+          259.4667
+        ]
+      },
+      "input_tokens": {
+        "mean": 140.0,
+        "ci95": [
+          139.2333,
+          140.7667
+        ]
+      },
+      "output_tokens": {
+        "mean": 60.4,
+        "ci95": [
+          57.5333,
+          62.8333
+        ]
+      },
+      "extract_ms": {
+        "mean": 0.1088,
+        "ci95": [
+          0.1052,
+          0.1129
+        ]
+      },
+      "prefill_ms": {
+        "mean": 510.1342,
+        "ci95": [
+          505.9828,
+          514.4356
+        ]
+      },
+      "decode_ms": {
+        "mean": 2419.2593,
+        "ci95": [
+          2307.2568,
+          2514.9796
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean": 2929.9844,
+        "ci95": [
+          2815.9424,
+          3026.2783
+        ]
+      },
+      "state_precision": {
+        "mean": 0.5555,
+        "ci95": [
+          0.4444,
+          0.6667
+        ]
+      },
+      "state_recall": {
+        "mean": 0.5555,
+        "ci95": [
+          0.4444,
+          0.6667
+        ]
+      },
+      "obsolete_pruning_accuracy": {
+        "mean": 0.2417,
+        "ci95": [
+          0.125,
+          0.3667
+        ]
+      },
+      "exact_match": {
+        "mean": 0.1333,
+        "ci95": [
+          0.0333,
+          0.2667
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.1333,
+        "ci95": [
+          0.0333,
+          0.2667
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.3333,
+        "ci95": [
+          0.1667,
+          0.5
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.7,
+        "ci95": [
+          0.5333,
+          0.8667
+        ]
+      }
+    },
+    "hybrid_gated": {
+      "n_dialogues": 30,
+      "n_rows": 30,
+      "wire_bytes": {
+        "mean": 258.3,
+        "ci95": [
+          257.1,
+          259.4667
+        ]
+      },
+      "input_tokens": {
+        "mean": 140.0,
+        "ci95": [
+          139.2333,
+          140.7667
+        ]
+      },
+      "output_tokens": {
+        "mean": 60.4,
+        "ci95": [
+          57.5333,
+          62.8333
+        ]
+      },
+      "extract_ms": {
+        "mean": 3703.9607,
+        "ci95": [
+          3425.2193,
+          4003.0996
+        ]
+      },
+      "prefill_ms": {
+        "mean": 509.3848,
+        "ci95": [
+          505.5939,
+          513.3877
+        ]
+      },
+      "decode_ms": {
+        "mean": 2423.5422,
+        "ci95": [
+          2311.0639,
+          2520.1064
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean": 6637.3402,
+        "ci95": [
+          6312.9677,
+          6985.5532
+        ]
+      },
+      "state_precision": {
+        "mean": 0.5555,
+        "ci95": [
+          0.4444,
+          0.6667
+        ]
+      },
+      "state_recall": {
+        "mean": 0.5555,
+        "ci95": [
+          0.4444,
+          0.6667
+        ]
+      },
+      "obsolete_pruning_accuracy": {
+        "mean": 0.2417,
+        "ci95": [
+          0.125,
+          0.3667
+        ]
+      },
+      "exact_match": {
+        "mean": 0.1333,
+        "ci95": [
+          0.0333,
+          0.2667
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.1333,
+        "ci95": [
+          0.0333,
+          0.2667
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.3333,
+        "ci95": [
+          0.1667,
+          0.5
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.7,
+        "ci95": [
+          0.5333,
+          0.8667
+        ]
+      }
+    },
+    "full_history_baseline": {
+      "n_dialogues": 30,
+      "n_rows": 30,
+      "wire_bytes": {
+        "mean": 687.7333,
+        "ci95": [
+          666.7658,
+          709.8
+        ]
+      },
+      "input_tokens": {
+        "mean": 227.9,
+        "ci95": [
+          224.2658,
+          231.7333
+        ]
+      },
+      "output_tokens": {
+        "mean": 27.9,
+        "ci95": [
+          22.1658,
+          33.8667
+        ]
+      },
+      "extract_ms": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "prefill_ms": {
+        "mean": 811.0696,
+        "ci95": [
+          798.6797,
+          823.4742
+        ]
+      },
+      "decode_ms": {
+        "mean": 1125.8639,
+        "ci95": [
+          896.7092,
+          1365.4975
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean": 1937.1875,
+        "ci95": [
+          1707.6569,
+          2177.4114
+        ]
+      },
+      "state_precision": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "state_recall": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "obsolete_pruning_accuracy": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "exact_match": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.4333,
+        "ci95": [
+          0.2667,
+          0.6
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.8,
+        "ci95": [
+          0.6667,
+          0.9333
+        ]
+      }
+    }
+  },
+  "paired_vs_full_history": {
+    "oracle_structured": {
+      "input_tokens": {
+        "mean_diff": -86.9333,
+        "ci95": [
+          -91.0667,
+          -83.1325
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": 803.3135,
+        "ci95": [
+          594.6491,
+          1017.9667
+        ]
+      },
+      "exact_match": {
+        "mean_diff": 0.2667,
+        "ci95": [
+          0.1333,
+          0.4333
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": 0.1333,
+        "ci95": [
+          0.0333,
+          0.2667
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": 0.4667,
+        "ci95": [
+          0.2333,
+          0.6667
+        ]
+      }
+    },
+    "deterministic_nlp_rules": {
+      "input_tokens": {
+        "mean_diff": -87.9,
+        "ci95": [
+          -91.7667,
+          -84.3325
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": 992.797,
+        "ci95": [
+          764.5097,
+          1212.2182
+        ]
+      },
+      "exact_match": {
+        "mean_diff": 0.1333,
+        "ci95": [
+          0.0333,
+          0.2667
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": 0.1333,
+        "ci95": [
+          0.0333,
+          0.2667
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": -0.1,
+        "ci95": [
+          -0.3667,
+          0.1667
+        ]
+      }
+    },
+    "hybrid_gated": {
+      "input_tokens": {
+        "mean_diff": -87.9,
+        "ci95": [
+          -91.7667,
+          -84.3325
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": 4700.1527,
+        "ci95": [
+          4261.3606,
+          5155.7349
+        ]
+      },
+      "exact_match": {
+        "mean_diff": 0.1333,
+        "ci95": [
+          0.0333,
+          0.2667
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": 0.1333,
+        "ci95": [
+          0.0333,
+          0.2667
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": -0.1,
+        "ci95": [
+          -0.3667,
+          0.1667
+        ]
+      }
+    }
+  }
+}

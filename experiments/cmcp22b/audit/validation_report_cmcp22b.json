@@ -1,0 +1,59 @@
+{
+  "disjointness": {
+    "passed": true,
+    "counts": {
+      "tune": 8,
+      "eval": 50,
+      "unstructured": 30
+    },
+    "id_overlap": [],
+    "domain_overlap": []
+  },
+  "no_machine_paths": {
+    "passed": true,
+    "files_with_machine_paths": [],
+    "files_checked": 19
+  },
+  "csv_summary_consistency": {
+    "passed": true,
+    "summaries_checked": [
+      {
+        "file": "portability_summary_eval_pair1_r3.json",
+        "rows": 600,
+        "max_diff": 0.0,
+        "passed": true
+      },
+      {
+        "file": "portability_summary_eval_pair2_r3.json",
+        "rows": 600,
+        "max_diff": 0.0,
+        "passed": true
+      },
+      {
+        "file": "portability_summary_port_tune.json",
+        "rows": 64,
+        "max_diff": 0.0,
+        "passed": true
+      },
+      {
+        "file": "unstructured_summary_unstruct_v1.json",
+        "rows": 120,
+        "max_diff": 0.0,
+        "passed": true
+      },
+      {
+        "file": "multiturn_summary_repro_hetero.json",
+        "rows": 1800,
+        "max_diff": 0.0,
+        "passed": true
+      },
+      {
+        "file": "multiturn_summary_repro_homo.json",
+        "rows": 1800,
+        "max_diff": 0.0,
+        "passed": true
+      }
+    ]
+  },
+  "overall_passed": true
+}

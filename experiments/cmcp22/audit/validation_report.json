@@ -18,7 +18,7 @@
   "no_machine_paths": {
     "passed": true,
     "files_with_machine_paths": [],
-    "files_checked": 16
+    "files_checked": 18
   },
   "csv_summary_consistency": {
     "passed": true,

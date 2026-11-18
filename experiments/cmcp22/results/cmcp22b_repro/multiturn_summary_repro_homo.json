@@ -1,0 +1,1098 @@
+{
+  "config": {
+    "split": "eval",
+    "num_scenarios": 50,
+    "reps": 3,
+    "max_tokens": 64,
+    "model_a_name": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+    "model_b_name": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+    "tag": "repro_homo",
+    "dataset_sha256": "b8911a280ff429e37b589665f472265945ebd8f9223c95de242aaacc3313e776",
+    "bootstrap_seed": 42,
+    "decoding": "greedy",
+    "methods": [
+      "full_history",
+      "rolling_summary",
+      "json_structured",
+      "cmcp_full",
+      "cmcp_incremental",
+      "cmcp_inc_llm_ext"
+    ]
+  },
+  "methods": {
+    "full_history": {
+      "n_scenarios": 50,
+      "n_rows": 300,
+      "wire_bytes": {
+        "mean": 686.36,
+        "ci95": [
+          683.53,
+          689.3102
+        ]
+      },
+      "input_tokens": {
+        "mean": 272.86,
+        "ci95": [
+          271.74,
+          274.1
+        ]
+      },
+      "output_tokens": {
+        "mean": 50.39,
+        "ci95": [
+          50.02,
+          51.02
+        ],
+        "p50": 64.0,
+        "p95": 64.0,
+        "std": 13.9199
+      },
+      "extract_ms": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "prefill_ms": {
+        "mean": 863.7256,
+        "ci95": [
+          849.5061,
+          880.1097
+        ],
+        "p50": 929.7345,
+        "p95": 1203.3371,
+        "std": 188.2615
+      },
+      "gen_ms": {
+        "mean": 1062.4128,
+        "ci95": [
+          1052.293,
+          1078.214
+        ],
+        "p50": 1287.7515,
+        "p95": 1396.1251,
+        "std": 298.2691
+      },
+      "e2e_accum_ms": {
+        "mean": 1926.6757,
+        "ci95": [
+          1907.7768,
+          1948.2338
+        ],
+        "p50": 2174.45,
+        "p95": 2408.1973,
+        "std": 453.8509
+      },
+      "exact_match": {
+        "mean": 0.53,
+        "ci95": [
+          0.5,
+          0.57
+        ]
+      },
+      "f1": {
+        "mean": 0.1044,
+        "ci95": [
+          0.0882,
+          0.1217
+        ]
+      },
+      "keyword_recall": {
+        "mean": 0.8171,
+        "ci95": [
+          0.79,
+          0.8414
+        ]
+      },
+      "entity_recall": {
+        "mean": 0.97,
+        "ci95": [
+          0.9433,
+          0.9933
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.95,
+        "ci95": [
+          0.91,
+          0.99
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.59,
+        "ci95": [
+          0.54,
+          0.65
+        ]
+      },
+      "temporal_consistency": {
+        "mean": 0.86,
+        "ci95": [
+          0.8,
+          0.92
+        ]
+      },
+      "contradiction_resolution": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "decision_consistency": {
+        "mean": 0.56,
+        "ci95": [
+          0.52,
+          0.61
+        ]
+      },
+      "task_completion_rate": {
+        "mean": 0.54,
+        "ci95": [
+          0.51,
+          0.58
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.14,
+        "ci95": [
+          0.08,
+          0.2
+        ]
+      }
+    },
+    "rolling_summary": {
+      "n_scenarios": 50,
+      "n_rows": 300,
+      "wire_bytes": {
+        "mean": 709.76,
+        "ci95": [
+          704.29,
+          715.16
+        ]
+      },
+      "input_tokens": {
+        "mean": 121.14,
+        "ci95": [
+          120.89,
+          121.41
+        ]
+      },
+      "output_tokens": {
+        "mean": 60.75,
+        "ci95": [
+          59.16,
+          62.22
+        ],
+        "p50": 64.0,
+        "p95": 64.0,
+        "std": 8.3101
+      },
+      "extract_ms": {
+        "mean": 6217.3627,
+        "ci95": [
+          6180.1693,
+          6258.0361
+        ]
+      },
+      "prefill_ms": {
+        "mean": 377.9754,
+        "ci95": [
+          373.8729,
+          382.4254
+        ],
+        "p50": 393.4545,
+        "p95": 436.7699,
+        "std": 55.0865
+      },
+      "gen_ms": {
+        "mean": 1250.1325,
+        "ci95": [
+          1217.1697,
+          1281.149
+        ],
+        "p50": 1307.656,
+        "p95": 1373.0396,
+        "std": 175.3089
+      },
+      "e2e_accum_ms": {
+        "mean": 7845.7752,
+        "ci95": [
+          7793.3552,
+          7899.9987
+        ],
+        "p50": 8010.6875,
+        "p95": 9068.5153,
+        "std": 1038.7003
+      },
+      "exact_match": {
+        "mean": 0.29,
+        "ci95": [
+          0.22,
+          0.36
+        ]
+      },
+      "f1": {
+        "mean": 0.0438,
+        "ci95": [
+          0.038,
+          0.0501
+        ]
+      },
+      "keyword_recall": {
+        "mean": 0.4372,
+        "ci95": [
+          0.3686,
+          0.5014
+        ]
+      },
+      "entity_recall": {
+        "mean": 0.6567,
+        "ci95": [
+          0.6433,
+          0.6666
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.5,
+        "ci95": [
+          0.5,
+          0.5
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.63,
+        "ci95": [
+          0.57,
+          0.69
+        ]
+      },
+      "temporal_consistency": {
+        "mean": 0.8,
+        "ci95": [
+          0.73,
+          0.87
+        ]
+      },
+      "contradiction_resolution": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "decision_consistency": {
+        "mean": 0.56,
+        "ci95": [
+          0.52,
+          0.61
+        ]
+      },
+      "task_completion_rate": {
+        "mean": 0.29,
+        "ci95": [
+          0.22,
+          0.36
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.2,
+        "ci95": [
+          0.13,
+          0.27
+        ]
+      }
+    },
+    "json_structured": {
+      "n_scenarios": 50,
+      "n_rows": 300,
+      "wire_bytes": {
+        "mean": 799.58,
+        "ci95": [
+          797.54,
+          801.7203
+        ]
+      },
+      "input_tokens": {
+        "mean": 311.48,
+        "ci95": [
+          310.5897,
+          312.47
+        ]
+      },
+      "output_tokens": {
+        "mean": 58.67,
+        "ci95": [
+          56.4,
+          60.7902
+        ],
+        "p50": 64.0,
+        "p95": 64.0,
+        "std": 12.1182
+      },
+      "extract_ms": {
+        "mean": 0.06,
+        "ci95": [
+          0.0594,
+          0.0607
+        ]
+      },
+      "prefill_ms": {
+        "mean": 981.023,
+        "ci95": [
+          969.0224,
+          994.2988
+        ],
+        "p50": 1037.8565,
+        "p95": 1099.1608,
+        "std": 148.6928
+      },
+      "gen_ms": {
+        "mean": 1237.2146,
+        "ci95": [
+          1188.7975,
+          1283.373
+        ],
+        "p50": 1335.424,
+        "p95": 1403.8397,
+        "std": 258.6895
+      },
+      "e2e_accum_ms": {
+        "mean": 2218.8525,
+        "ci95": [
+          2166.6709,
+          2267.8274
+        ],
+        "p50": 2300.859,
+        "p95": 2465.5062,
+        "std": 327.3332
+      },
+      "exact_match": {
+        "mean": 0.5,
+        "ci95": [
+          0.5,
+          0.5
+        ]
+      },
+      "f1": {
+        "mean": 0.1164,
+        "ci95": [
+          0.1038,
+          0.1294
+        ]
+      },
+      "keyword_recall": {
+        "mean": 0.7257,
+        "ci95": [
+          0.7057,
+          0.7471
+        ]
+      },
+      "entity_recall": {
+        "mean": 0.94,
+        "ci95": [
+          0.9,
+          0.9733
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.91,
+        "ci95": [
+          0.85,
+          0.96
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.59,
+        "ci95": [
+          0.54,
+          0.65
+        ]
+      },
+      "temporal_consistency": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "contradiction_resolution": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "decision_consistency": {
+        "mean": 0.53,
+        "ci95": [
+          0.5,
+          0.57
+        ]
+      },
+      "task_completion_rate": {
+        "mean": 0.53,
+        "ci95": [
+          0.5,
+          0.57
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "cmcp_full": {
+      "n_scenarios": 50,
+      "n_rows": 300,
+      "wire_bytes": {
+        "mean": 697.73,
+        "ci95": [
+          695.5797,
+          700.1103
+        ]
+      },
+      "input_tokens": {
+        "mean": 159.68,
+        "ci95": [
+          158.83,
+          160.65
+        ]
+      },
+      "output_tokens": {
+        "mean": 63.98,
+        "ci95": [
+          63.95,
+          64.0
+        ],
+        "p50": 64.0,
+        "p95": 64.0,
+        "std": 0.1402
+      },
+      "extract_ms": {
+        "mean": 0.06,
+        "ci95": [
+          0.0594,
+          0.0607
+        ]
+      },
+      "prefill_ms": {
+        "mean": 502.1971,
+        "ci95": [
+          495.1114,
+          509.5946
+        ],
+        "p50": 530.6355,
+        "p95": 697.324,
+        "std": 99.1387
+      },
+      "gen_ms": {
+        "mean": 1324.7514,
+        "ci95": [
+          1321.5593,
+          1328.0081
+        ],
+        "p50": 1321.152,
+        "p95": 1381.55,
+        "std": 35.1008
+      },
+      "e2e_accum_ms": {
+        "mean": 1828.1385,
+        "ci95": [
+          1820.3511,
+          1836.5074
+        ],
+        "p50": 1830.438,
+        "p95": 2007.8505,
+        "std": 104.5291
+      },
+      "exact_match": {
+        "mean": 0.75,
+        "ci95": [
+          0.68,
+          0.82
+        ]
+      },
+      "f1": {
+        "mean": 0.2008,
+        "ci95": [
+          0.1806,
+          0.2195
+        ]
+      },
+      "keyword_recall": {
+        "mean": 0.9171,
+        "ci95": [
+          0.8814,
+          0.9486
+        ]
+      },
+      "entity_recall": {
+        "mean": 0.9567,
+        "ci95": [
+          0.93,
+          0.98
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.9,
+        "ci95": [
+          0.84,
+          0.95
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.8,
+        "ci95": [
+          0.73,
+          0.87
+        ]
+      },
+      "temporal_consistency": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "contradiction_resolution": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "decision_consistency": {
+        "mean": 0.88,
+        "ci95": [
+          0.82,
+          0.94
+        ]
+      },
+      "task_completion_rate": {
+        "mean": 0.88,
+        "ci95": [
+          0.82,
+          0.94
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "cmcp_incremental": {
+      "n_scenarios": 50,
+      "n_rows": 300,
+      "wire_bytes": {
+        "mean": 249.96,
+        "ci95": [
+          249.49,
+          250.39
+        ]
+      },
+      "input_tokens": {
+        "mean": 159.68,
+        "ci95": [
+          158.83,
+          160.65
+        ]
+      },
+      "output_tokens": {
+        "mean": 63.98,
+        "ci95": [
+          63.95,
+          64.0
+        ],
+        "p50": 64.0,
+        "p95": 64.0,
+        "std": 0.1402
+      },
+      "extract_ms": {
+        "mean": 0.06,
+        "ci95": [
+          0.0594,
+          0.0607
+        ]
+      },
+      "prefill_ms": {
+        "mean": 499.2089,
+        "ci95": [
+          492.214,
+          507.073
+        ],
+        "p50": 528.148,
+        "p95": 693.4739,
+        "std": 98.162
+      },
+      "gen_ms": {
+        "mean": 1325.3825,
+        "ci95": [
+          1321.6708,
+          1329.3287
+        ],
+        "p50": 1322.672,
+        "p95": 1384.7855,
+        "std": 41.8511
+      },
+      "e2e_accum_ms": {
+        "mean": 1825.3374,
+        "ci95": [
+          1816.8394,
+          1834.553
+        ],
+        "p50": 1823.53,
+        "p95": 1973.921,
+        "std": 114.182
+      },
+      "exact_match": {
+        "mean": 0.75,
+        "ci95": [
+          0.68,
+          0.82
+        ]
+      },
+      "f1": {
+        "mean": 0.2008,
+        "ci95": [
+          0.1806,
+          0.2195
+        ]
+      },
+      "keyword_recall": {
+        "mean": 0.9171,
+        "ci95": [
+          0.8814,
+          0.9486
+        ]
+      },
+      "entity_recall": {
+        "mean": 0.9567,
+        "ci95": [
+          0.93,
+          0.98
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.9,
+        "ci95": [
+          0.84,
+          0.95
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.8,
+        "ci95": [
+          0.73,
+          0.87
+        ]
+      },
+      "temporal_consistency": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "contradiction_resolution": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "decision_consistency": {
+        "mean": 0.88,
+        "ci95": [
+          0.82,
+          0.94
+        ]
+      },
+      "task_completion_rate": {
+        "mean": 0.88,
+        "ci95": [
+          0.82,
+          0.94
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "cmcp_inc_llm_ext": {
+      "n_scenarios": 50,
+      "n_rows": 300,
+      "wire_bytes": {
+        "mean": 474.57,
+        "ci95": [
+          458.9095,
+          490.8705
+        ]
+      },
+      "input_tokens": {
+        "mean": 236.52,
+        "ci95": [
+          236.06,
+          236.9903
+        ]
+      },
+      "output_tokens": {
+        "mean": 63.22,
+        "ci95": [
+          62.18,
+          64.0
+        ],
+        "p50": 64.0,
+        "p95": 64.0,
+        "std": 4.4427
+      },
+      "extract_ms": {
+        "mean": 4456.0138,
+        "ci95": [
+          4427.4756,
+          4483.6898
+        ]
+      },
+      "prefill_ms": {
+        "mean": 749.5066,
+        "ci95": [
+          738.7357,
+          761.5176
+        ],
+        "p50": 808.0225,
+        "p95": 1050.7101,
+        "std": 156.9025
+      },
+      "gen_ms": {
+        "mean": 1324.6788,
+        "ci95": [
+          1304.5678,
+          1340.9323
+        ],
+        "p50": 1338.691,
+        "p95": 1398.2077,
+        "std": 101.8683
+      },
+      "e2e_accum_ms": {
+        "mean": 6530.5681,
+        "ci95": [
+          6490.7032,
+          6568.6992
+        ],
+        "p50": 6699.128,
+        "p95": 7500.3672,
+        "std": 801.0541
+      },
+      "exact_match": {
+        "mean": 0.24,
+        "ci95": [
+          0.17,
+          0.31
+        ]
+      },
+      "f1": {
+        "mean": 0.0433,
+        "ci95": [
+          0.0361,
+          0.0515
+        ]
+      },
+      "keyword_recall": {
+        "mean": 0.4,
+        "ci95": [
+          0.3272,
+          0.4757
+        ]
+      },
+      "entity_recall": {
+        "mean": 0.7267,
+        "ci95": [
+          0.6933,
+          0.7667
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.59,
+        "ci95": [
+          0.54,
+          0.65
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.5,
+        "ci95": [
+          0.5,
+          0.5
+        ]
+      },
+      "temporal_consistency": {
+        "mean": 0.86,
+        "ci95": [
+          0.8,
+          0.92
+        ]
+      },
+      "contradiction_resolution": {
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "decision_consistency": {
+        "mean": 0.5,
+        "ci95": [
+          0.5,
+          0.5
+        ]
+      },
+      "task_completion_rate": {
+        "mean": 0.24,
+        "ci95": [
+          0.17,
+          0.31
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.14,
+        "ci95": [
+          0.08,
+          0.2
+        ]
+      }
+    }
+  },
+  "paired_vs_full_history": {
+    "rolling_summary": {
+      "input_tokens": {
+        "mean_diff": -151.72,
+        "ci95": [
+          -152.9,
+          -150.65
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": 5919.0995,
+        "ci95": [
+          5857.1461,
+          5982.0543
+        ]
+      },
+      "exact_match": {
+        "mean_diff": -0.24,
+        "ci95": [
+          -0.31,
+          -0.17
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": -0.45,
+        "ci95": [
+          -0.49,
+          -0.41
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": 0.04,
+        "ci95": [
+          -0.04,
+          0.12
+        ]
+      },
+      "task_completion_rate": {
+        "mean_diff": -0.25,
+        "ci95": [
+          -0.33,
+          -0.18
+        ]
+      }
+    },
+    "json_structured": {
+      "input_tokens": {
+        "mean_diff": 38.62,
+        "ci95": [
+          37.98,
+          39.23
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": 292.1768,
+        "ci95": [
+          235.2004,
+          346.2407
+        ]
+      },
+      "exact_match": {
+        "mean_diff": -0.03,
+        "ci95": [
+          -0.07,
+          0.0
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": -0.04,
+        "ci95": [
+          -0.1,
+          0.01
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": 0.0,
+        "ci95": [
+          -0.07,
+          0.07
+        ]
+      },
+      "task_completion_rate": {
+        "mean_diff": -0.01,
+        "ci95": [
+          -0.06,
+          0.04
+        ]
+      }
+    },
+    "cmcp_full": {
+      "input_tokens": {
+        "mean_diff": -113.18,
+        "ci95": [
+          -113.84,
+          -112.54
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": -98.5371,
+        "ci95": [
+          -119.3041,
+          -80.0555
+        ]
+      },
+      "exact_match": {
+        "mean_diff": 0.22,
+        "ci95": [
+          0.14,
+          0.3
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": -0.05,
+        "ci95": [
+          -0.11,
+          0.0
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": 0.21,
+        "ci95": [
+          0.12,
+          0.3
+        ]
+      },
+      "task_completion_rate": {
+        "mean_diff": 0.34,
+        "ci95": [
+          0.27,
+          0.41
+        ]
+      }
+    },
+    "cmcp_incremental": {
+      "input_tokens": {
+        "mean_diff": -113.18,
+        "ci95": [
+          -113.84,
+          -112.54
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": -101.3383,
+        "ci95": [
+          -122.259,
+          -82.4318
+        ]
+      },
+      "exact_match": {
+        "mean_diff": 0.22,
+        "ci95": [
+          0.14,
+          0.3
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": -0.05,
+        "ci95": [
+          -0.11,
+          0.0
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": 0.21,
+        "ci95": [
+          0.12,
+          0.3
+        ]
+      },
+      "task_completion_rate": {
+        "mean_diff": 0.34,
+        "ci95": [
+          0.27,
+          0.41
+        ]
+      }
+    },
+    "cmcp_inc_llm_ext": {
+      "input_tokens": {
+        "mean_diff": -36.34,
+        "ci95": [
+          -37.17,
+          -35.59
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": 4603.8924,
+        "ci95": [
+          4557.4109,
+          4647.1133
+        ]
+      },
+      "exact_match": {
+        "mean_diff": -0.29,
+        "ci95": [
+          -0.36,
+          -0.22
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": -0.36,
+        "ci95": [
+          -0.42,
+          -0.29
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": -0.09,
+        "ci95": [
+          -0.15,
+          -0.04
+        ]
+      },
+      "task_completion_rate": {
+        "mean_diff": -0.3,
+        "ci95": [
+          -0.37,
+          -0.23
+        ]
+      }
+    }
+  }
+}
