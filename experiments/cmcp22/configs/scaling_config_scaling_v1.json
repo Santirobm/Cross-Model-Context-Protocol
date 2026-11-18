@@ -1,0 +1,11 @@
+{
+  "turns_list": [
+    5,
+    10,
+    20,
+    40
+  ],
+  "model_name": "Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+  "n_ctx": 2048,
+  "tag": "scaling_v1"
+}

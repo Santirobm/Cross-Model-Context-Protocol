@@ -1,0 +1,53 @@
+{
+  "dataset_disjointness": {
+    "passed": true,
+    "counts": {
+      "dev": 8,
+      "tune": 8,
+      "eval": 50
+    },
+    "id_overlap": [],
+    "eval_domain_overlap": []
+  },
+  "no_ground_truth_leakage": {
+    "passed": true,
+    "ops_attr_hits_in_extractors": [],
+    "total_extract_errors": 0,
+    "total_extracted_ops": 858
+  },
+  "no_machine_paths": {
+    "passed": true,
+    "files_with_machine_paths": [],
+    "files_checked": 16
+  },
+  "csv_summary_consistency": {
+    "passed": true,
+    "summaries_checked": [
+      {
+        "tag": "dev_smoke",
+        "rows": 96,
+        "max_diff": 0.0,
+        "passed": true
+      },
+      {
+        "tag": "eval_hetero",
+        "rows": 600,
+        "max_diff": 0.0,
+        "passed": true
+      },
+      {
+        "tag": "eval_homo",
+        "rows": 600,
+        "max_diff": 0.0,
+        "passed": true
+      },
+      {
+        "tag": "tune_check",
+        "rows": 96,
+        "max_diff": 0.0,
+        "passed": true
+      }
+    ]
+  },
+  "overall_passed": true
+}

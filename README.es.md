@@ -16,23 +16,29 @@ CMCP separa:
 
 ---
 
-## 2. Resultados Observados y Limitaciones (CMCP 2.1, `n = 18` tareas × 3 reps)
+## 2. Resultados Observados y Limitaciones (Validación Multi-Turno CMCP 2.2, `n = 50` Escenarios Eval Disjuntos)
 
-Evaluado sobre `Llama-3.2-1B-Instruct-Q4_K_M.gguf` en CPU con bootstrap agrupado por tarea e IC 95% ([docs/research/cmcp22_baseline_audit.md](docs/research/cmcp22_baseline_audit.md)):
+Evaluado en 50 escenarios de 8 turnos (5 dominios no vistos, 2 consultas/escenario = 100 puntos/método) con bootstrap agrupado por escenario e IC 95% ([FINAL_RESEARCH_REPORT_V3.md](FINAL_RESEARCH_REPORT_V3.md)):
 
-| Método | Bytes Wire | Tokens Receptor | End-to-End (ms) | Exact Match | F1 | Relation Recovery |
-|---|---:|---:|---:|---:|---:|---:|
-| `full_history` | 709.67 | 233.67 | 1,893.32 | 0.6111 | 0.4843 | **0.4444** |
-| `json_structured` | 1,364.00 | 409.83 | 2,777.56 | 0.1667 | 0.2545 | **0.7500** |
-| `cmcp_binary_tlv` | 709.17 | 308.83 | 2,378.03 | **0.8889** | 0.4844 | 0.1667 |
-| `cmcp_incremental` | **236.17** (+151 B store) | **124.83** (`-46.6%`) | **1,694.10** (`-10.5%`) | 0.8333 | 0.4549 | **0.0833** |
+| Configuración y Método | Bytes Wire | Tokens Entrada | E2E ms | Exact Match | Rel Rec | Constr Sat | Task Comp |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| **Hetero (`Qwen2.5-0.5B -> Llama-3.2-1B`)** | | | | | | | |
+| `full_history` | 686.4 | 236.0 | **2,516.6** | **0.62** | **1.00** | **0.85** | **0.77** |
+| `rolling_summary` | 709.8 | **108.6** | 8,241.2 | 0.40 | 0.50 | 0.56 | 0.40 |
+| `json_structured` | 799.6 | 286.7 | 2,759.9 | 0.40 | **1.00** | 0.58 | 0.47 |
+| `cmcp_incremental` (ext. det.) | **250.0** | 136.4 | 2,739.6 | 0.57 | 0.74 | 0.72 | 0.58 |
+| `cmcp_inc_llm_ext` (ext. LLM 0.5B) | 474.6 | 218.6 | 6,993.6 | 0.20 | 0.61 | 0.55 | 0.20 |
+| **Homo (`Qwen2.5-0.5B -> Qwen2.5-0.5B`)** | | | | | | | |
+| `full_history` | 686.4 | 272.9 | 1,916.5 | 0.53 | **0.95** | 0.59 | 0.54 |
+| `cmcp_incremental` (ext. det.) | **250.0** | **159.7** | **1,793.1** | **0.75** | 0.90 | **0.80** | **0.88** |
 
 **Qué funcionó:**
-- `cmcp_incremental` redujo tokens de entrada en **46.6%** (`[-109.6, -108.2]` IC 95%) y latencia end-to-end en **10.5%** partiendo de hechos estructurados.
+- **Eficiencia Wire y Tokens:** `cmcp_incremental` reduce bytes en red en **63.6%** en eval de 8 turnos y **91.5%** acumulado a 40 turnos (`94,625 B -> 8,005 B`, `311 B` constantes por turno), reduciendo tokens de entrada en **41.5–42.2%** y prefill en **42.3%** (`2.63x` a 40 turnos).
+- **Ganancia Homogénea:** En `Qwen2.5-0.5B -> Qwen2.5-0.5B`, `cmcp_incremental` supera a `full_history` tanto en latencia E2E (`-123.4 ms [-156.5, -92.7]`) como en calidad (`EM +0.22 [+0.14, +0.30]`, `task_completion +0.34 [+0.27, +0.41]`).
 
-**Limitaciones:**
-- **Caída en Relation Recovery:** `cmcp_incremental` bajó a `0.0833` frente a `0.4444` (`full_history`) porque omitía las relaciones explícitas del delta y la respuesta telegráfica omitía la entidad origen.
-- **Costo de extracción excluido:** CMCP 2.1 no midió el costo de extracción asistida por LLM desde texto libre.
+**Limitaciones y resultados negativos:**
+- **Brecha Heterogénea en E2E y Relaciones (`Llama-3.2-1B`):** `cmcp_incremental` empata en `EM` (`-0.05 [-0.12, +0.02]`) y supera a `json_structured` y `rolling_summary`, pero `Llama-3.2-1B` genera más tokens sobre líneas estructuradas (`+223.0 ms` E2E) y cae en `relation_recovery` (`-0.26`).
+- **Extracción LLM 0.5B y Rolling Summary:** `rolling_summary` (`+5,725 ms E2E`, `-0.22 EM`) y `cmcp_inc_llm_ext` (`+4,477 ms E2E`, `-0.42 EM`) son más lentos y mucho menos precisos que `full_history` y la extracción determinista (`0.06 ms`).
 - **KV / Latente Cross-Arch:** Refutado para transferencia factual sin entrenamiento end-to-end ([FINAL_RESEARCH_REPORT_V2.md](FINAL_RESEARCH_REPORT_V2.md)).
 
 ---
@@ -44,9 +50,10 @@ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ctest --test-dir build --output-on-failure
 
-.venv\Scripts\pytest.exe tests/test_protocol_and_adapters.py -v
-.venv\Scripts\python.exe experiments/context_transfer/run_context_benchmark.py --split eval --reps 3
-.venv\Scripts\python.exe experiments/audit/validate_cmcp21.py
+.venv\Scripts\pytest.exe tests/ -v
+.venv\Scripts\python.exe -m experiments.cmcp22.run_multiturn_benchmark --split eval --reps 1 --max-tokens 64 --model-a $CMCP_MODEL_A --model-b $CMCP_MODEL_B --tag eval_hetero
+.venv\Scripts\python.exe -m experiments.cmcp22.run_scaling_benchmark --model $CMCP_MODEL_B --tag scaling_v1 --turns 5 10 20 40
+.venv\Scripts\python.exe experiments/cmcp22/audit/validate_cmcp22.py
 ```
 
 ---

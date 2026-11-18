@@ -16,23 +16,29 @@ CMCP separates:
 
 ---
 
-## 2. Demonstrated Results & Limitations (CMCP 2.1 Baseline, `n = 18` Eval Tasks × 3 Reps)
+## 2. Demonstrated Results & Limitations (CMCP 2.2 Multi-Turn Validation, `n = 50` Disjoint Eval Scenarios)
 
-Evaluated on `Llama-3.2-1B-Instruct-Q4_K_M.gguf` (CPU, `llama.cpp` persistent harness) with task-level clustered bootstrap 95% CIs ([docs/research/cmcp22_baseline_audit.md](docs/research/cmcp22_baseline_audit.md)):
+Evaluated across 50 held-out 8-turn scenarios (5 unseen domains, 2 queries/scenario = 100 eval points/method) with scenario-clustered bootstrap 95% CIs ([FINAL_RESEARCH_REPORT_V3.md](FINAL_RESEARCH_REPORT_V3.md)):
 
-| Method | Wire Bytes | Recv Input Tokens | End-to-End (ms) | Exact Match | F1 | Relation Recovery |
-|---|---:|---:|---:|---:|---:|---:|
-| `full_history` | 709.67 | 233.67 | 1,893.32 | 0.6111 | 0.4843 | **0.4444** |
-| `json_structured` | 1,364.00 | 409.83 | 2,777.56 | 0.1667 | 0.2545 | **0.7500** |
-| `cmcp_binary_tlv` | 709.17 | 308.83 | 2,378.03 | **0.8889** | 0.4844 | 0.1667 |
-| `cmcp_incremental` | **236.17** (+151 B store) | **124.83** (`-46.6%`) | **1,694.10** (`-10.5%`) | 0.8333 | 0.4549 | **0.0833** |
+| Setup & Method | Wire Bytes | Input Tok | E2E ms | Exact Match | Rel Rec | Constr Sat | Task Comp |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| **Hetero (`Qwen2.5-0.5B -> Llama-3.2-1B`)** | | | | | | | |
+| `full_history` | 686.4 | 236.0 | **2,516.6** | **0.62** | **1.00** | **0.85** | **0.77** |
+| `rolling_summary` | 709.8 | **108.6** | 8,241.2 | 0.40 | 0.50 | 0.56 | 0.40 |
+| `json_structured` | 799.6 | 286.7 | 2,759.9 | 0.40 | **1.00** | 0.58 | 0.47 |
+| `cmcp_incremental` (det. ext) | **250.0** | 136.4 | 2,739.6 | 0.57 | 0.74 | 0.72 | 0.58 |
+| `cmcp_inc_llm_ext` (0.5B LLM ext) | 474.6 | 218.6 | 6,993.6 | 0.20 | 0.61 | 0.55 | 0.20 |
+| **Homo (`Qwen2.5-0.5B -> Qwen2.5-0.5B`)** | | | | | | | |
+| `full_history` | 686.4 | 272.9 | 1,916.5 | 0.53 | **0.95** | 0.59 | 0.54 |
+| `cmcp_incremental` (det. ext) | **250.0** | **159.7** | **1,793.1** | **0.75** | 0.90 | **0.80** | **0.88** |
 
 **What worked:**
-- `cmcp_incremental` reduced receiver input tokens by **46.6%** (`[-109.6, -108.2]` 95% CI) and end-to-end latency by **10.5%** when facts were pre-structured.
+- **Wire & Token Efficiency:** `cmcp_incremental` cuts wire bytes by **63.6%** on 8-turn eval and **91.5%** cumulative at 40 turns (`94,625 B -> 8,005 B`, constant `311 B` per turn), reducing input tokens by **41.5–42.2%** and prefill latency by **42.3%** (`2.63x` at 40 turns).
+- **Homogeneous Quality & Speedup:** On `Qwen2.5-0.5B -> Qwen2.5-0.5B`, `cmcp_incremental` beats `full_history` in both E2E latency (`-123.4 ms [-156.5, -92.7]`) and quality (`EM +0.22 [+0.14, +0.30]`, `task_completion +0.34 [+0.27, +0.41]`).
 
-**Known limitations:**
-- **Relation Recovery Drop:** `cmcp_incremental` dropped to `0.0833` vs `0.4444` (`full_history`) because relations were omitted from the incremental payload and concise prompting suppressed source-entity naming.
-- **Extraction Cost Excluded:** CMCP 2.1 timed conversion from pre-structured objects (`0.07 ms`); real-world LLM extraction cost was not yet included.
+**Honest limitations & negative results:**
+- **Heterogeneous E2E & Relation Gap (`Llama-3.2-1B`):** On `Llama-3.2-1B`, `cmcp_incremental` matches `full_history` on `EM` (`-0.05 [-0.12, +0.02]`) and beats `json_structured` / `rolling_summary`, but `Llama-3.2-1B` generates more output tokens on structured lines (`+223.0 ms` E2E) and trails on `relation_recovery` (`-0.26`).
+- **0.5B LLM Extraction & Rolling Summary:** Both `rolling_summary` (`+5,725 ms E2E`, `-0.22 EM`) and `cmcp_inc_llm_ext` (`+4,477 ms E2E`, `-0.42 EM`) are slower and much less accurate than `full_history` and deterministic extraction (`0.06 ms`).
 - **Cross-Arch KV & Latent Transfer:** Refuted for factual transfer without end-to-end training ([FINAL_RESEARCH_REPORT_V2.md](FINAL_RESEARCH_REPORT_V2.md)).
 
 ---
@@ -50,10 +56,11 @@ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
   -DCMCP_BUILD_LLAMA_HARNESS=ON -DCMCP_LLAMA_DIR=/path/to/llama.cpp
 cmake --build build
 
-# 3. Python tests & benchmarks
-.venv\Scripts\pytest.exe tests/test_protocol_and_adapters.py -v
-.venv\Scripts\python.exe experiments/context_transfer/run_context_benchmark.py --split eval --reps 3
-.venv\Scripts\python.exe experiments/audit/validate_cmcp21.py
+# 3. Python tests & CMCP 2.2 validation
+.venv\Scripts\pytest.exe tests/ -v
+.venv\Scripts\python.exe -m experiments.cmcp22.run_multiturn_benchmark --split eval --reps 1 --max-tokens 64 --model-a $CMCP_MODEL_A --model-b $CMCP_MODEL_B --tag eval_hetero
+.venv\Scripts\python.exe -m experiments.cmcp22.run_scaling_benchmark --model $CMCP_MODEL_B --tag scaling_v1 --turns 5 10 20 40
+.venv\Scripts\python.exe experiments/cmcp22/audit/validate_cmcp22.py
 ```
 
 ---
