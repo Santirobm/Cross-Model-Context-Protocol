@@ -1,10 +1,14 @@
 .venv/
 build/
+build-*/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 *.gguf
+*.npz
+offline_tensors/
+offline_kv/
 results/raw/*.bin
 *.egg-info/
 .pytest_cache/

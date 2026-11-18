@@ -527,6 +527,130 @@ int main(int argc, char **argv) {
 
     if (strcmp(mode, "bench") == 0) {
         rc = run_bench(model_path, prompt, max_tokens, n_ctx, n_threads);
+    } else if (strcmp(mode, "persistent") == 0) {
+        struct llama_model_params mparams = llama_model_default_params();
+        struct llama_model *model = llama_model_load_from_file(model_path, mparams);
+        struct llama_context_params cparams;
+        struct llama_context *ctx;
+        const struct llama_vocab *vocab;
+        char *line = (char *)malloc(65536u);
+        char *prompt_buf = (char *)malloc(65536u);
+        if (model == NULL || line == NULL || prompt_buf == NULL) {
+            free(line);
+            free(prompt_buf);
+            if (model) llama_model_free(model);
+            return 1;
+        }
+        cparams = llama_context_default_params();
+        cparams.n_ctx = n_ctx;
+        cparams.n_batch = n_ctx;
+        cparams.n_threads = n_threads;
+        cparams.n_threads_batch = n_threads;
+        ctx = llama_init_from_model(model, cparams);
+        if (ctx == NULL) {
+            free(line);
+            free(prompt_buf);
+            llama_model_free(model);
+            return 1;
+        }
+        vocab = llama_model_get_vocab(model);
+        printf("{\"ready\":true}\n");
+        fflush(stdout);
+
+        while (fgets(line, 65536, stdin) != NULL) {
+            char *tab = strchr(line, '\t');
+            int32_t req_max = 0;
+            size_t plen = 0u;
+            llama_token *tokens = NULL;
+            int32_t n_in = 0, n_gen = 0;
+            int64_t t0, t1;
+            double tok_ms = 0.0, pre_ms = 0.0, ev_ms = 0.0;
+            char *out_text = (char *)calloc(1u, 1024u);
+            size_t out_cap = 1024u, out_len = 0u;
+
+            if (tab == NULL) {
+                free(out_text);
+                continue;
+            }
+            *tab = '\0';
+            req_max = atoi(line);
+            {
+                const char *src = tab + 1;
+                while (*src != '\0' && *src != '\n' && *src != '\r' && plen + 1u < 65536u) {
+                    if (*src == '\\' && src[1] != '\0') {
+                        if (src[1] == 'n') { prompt_buf[plen++] = '\n'; src += 2; continue; }
+                        if (src[1] == 't') { prompt_buf[plen++] = '\t'; src += 2; continue; }
+                        if (src[1] == 'r') { prompt_buf[plen++] = '\r'; src += 2; continue; }
+                        if (src[1] == '\\') { prompt_buf[plen++] = '\\'; src += 2; continue; }
+                    }
+                    prompt_buf[plen++] = *src++;
+                }
+                prompt_buf[plen] = '\0';
+            }
+
+            llama_memory_clear(llama_get_memory(ctx), true);
+            t0 = llama_time_us();
+            if (tokenize_prompt(vocab, prompt_buf, &tokens, &n_in) != 0) {
+                printf("{\"error\":\"tokenize failed\"}\n");
+                fflush(stdout);
+                free(out_text);
+                continue;
+            }
+            t1 = llama_time_us();
+            tok_ms = (double)(t1 - t0) / 1000.0;
+
+            if (req_max > 0) {
+                struct llama_sampler *smpl = llama_sampler_init_greedy();
+                t0 = llama_time_us();
+                if (llama_decode(ctx, llama_batch_get_one(tokens, n_in)) != 0) {
+                    llama_sampler_free(smpl);
+                    free(tokens);
+                    printf("{\"error\":\"prefill failed\"}\n");
+                    fflush(stdout);
+                    free(out_text);
+                    continue;
+                }
+                t1 = llama_time_us();
+                pre_ms = (double)(t1 - t0) / 1000.0;
+
+                t0 = llama_time_us();
+                for (int32_t i = 0; i < req_max; ++i) {
+                    llama_token next_tok = llama_sampler_sample(smpl, ctx, -1);
+                    char piece[256];
+                    int32_t piece_len;
+                    if (llama_vocab_is_eog(vocab, next_tok)) break;
+                    piece_len = llama_token_to_piece(vocab, next_tok, piece, (int32_t)sizeof(piece), 0, true);
+                    if (piece_len > 0) {
+                        if (out_len + (size_t)piece_len + 1u > out_cap) {
+                            out_cap = (out_len + (size_t)piece_len + 1u) * 2u;
+                            out_text = (char *)realloc(out_text, out_cap);
+                        }
+                        memcpy(out_text + out_len, piece, (size_t)piece_len);
+                        out_len += (size_t)piece_len;
+                        out_text[out_len] = '\0';
+                    }
+                    ++n_gen;
+                    if (llama_decode(ctx, llama_batch_get_one(&next_tok, 1)) != 0) break;
+                }
+                t1 = llama_time_us();
+                ev_ms = (double)(t1 - t0) / 1000.0;
+                llama_sampler_free(smpl);
+            }
+
+            printf("{\"n_input_tokens\":%d,\"n_gen_tokens\":%d,\"tokenize_ms\":%.3f,\"prefill_ms\":%.3f,\"eval_ms\":%.3f,\"rss_mib\":%.2f,\"output_text\":",
+                   n_in, n_gen, tok_ms, pre_ms, ev_ms, get_rss_mib());
+            print_json_escaped(out_text);
+            printf("}\n");
+            fflush(stdout);
+
+            free(tokens);
+            free(out_text);
+        }
+        free(line);
+        free(prompt_buf);
+        llama_free(ctx);
+        llama_model_free(model);
+        rc = 0;
     } else if (strcmp(mode, "kv-compat") == 0) {
         rc = run_kv_compat(model_path, kv_test_path, prompt, n_ctx, n_threads);
     } else if (strcmp(mode, "embed") == 0) {
