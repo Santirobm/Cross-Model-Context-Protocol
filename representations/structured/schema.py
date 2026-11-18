@@ -114,12 +114,12 @@ class CMCPContext(BaseModel):
         ctx_block = self.to_compact_text(include_resolved_refs=include_resolved_refs)
         if task_query:
             return (
-                "CMCP_CTX:\n"
-                f"{ctx_block}\n"
-                f"QUERY: {task_query}\n"
-                "Answer concisely using only facts, constraints, decisions, and evidence in CMCP_CTX."
+                "Context:\n"
+                f"{ctx_block}\n\n"
+                f"Question: {task_query}\n"
+                "Answer concisely:"
             )
-        return f"CMCP_CTX:\n{ctx_block}"
+        return f"Context:\n{ctx_block}"
 
     def to_tlv_records(self) -> List[Tuple[int, bytes]]:
         """Convert structured fields into (tag, utf8_bytes) pairs for binary TLV encoding."""
