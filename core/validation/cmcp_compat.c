@@ -1,3 +1,6 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include "cmcp/cmcp.h"
 #include <math.h>
 #include <stdio.h>
@@ -32,6 +35,67 @@ void cmcp_model_profile_init(cmcp_model_profile_t *profile, const char *arch_nam
         profile->arch_hash = cmcp_fnv1a_64(arch_name, len);
     }
     profile->rope_freq_scale = 1.0f;
+}
+
+cmcp_status_t cmcp_fingerprint_file(const char *path, uint64_t *out_hash) {
+    FILE *fp;
+    uint8_t buf[65536];
+    uint64_t h = 14695981039346656037ULL;
+    uint64_t file_size = 0u;
+    size_t n_head;
+    size_t i;
+
+    if (path == NULL || out_hash == NULL || path[0] == '\0') {
+        return CMCP_ERR_INVALID_ARG;
+    }
+
+    fp = fopen(path, "rb");
+    if (fp == NULL) {
+        return CMCP_ERR_IO;
+    }
+
+    if (fseek(fp, 0, SEEK_END) != 0) {
+        fclose(fp);
+        return CMCP_ERR_IO;
+    }
+    {
+        long sz = ftell(fp);
+        if (sz < 0) {
+            fclose(fp);
+            return CMCP_ERR_IO;
+        }
+        file_size = (uint64_t)sz;
+    }
+    if (fseek(fp, 0, SEEK_SET) != 0) {
+        fclose(fp);
+        return CMCP_ERR_IO;
+    }
+
+    for (i = 0u; i < 8u; ++i) {
+        h ^= (uint8_t)((file_size >> (i * 8u)) & 0xFFu);
+        h *= 1099511628211ULL;
+    }
+
+    n_head = fread(buf, 1u, sizeof(buf), fp);
+    for (i = 0u; i < n_head; ++i) {
+        h ^= (uint64_t)buf[i];
+        h *= 1099511628211ULL;
+    }
+
+    if (file_size > (uint64_t)sizeof(buf)) {
+        uint64_t tail_off = file_size - (uint64_t)sizeof(buf);
+        if (fseek(fp, (long)tail_off, SEEK_SET) == 0) {
+            size_t n_tail = fread(buf, 1u, sizeof(buf), fp);
+            for (i = 0u; i < n_tail; ++i) {
+                h ^= (uint64_t)buf[i];
+                h *= 1099511628211ULL;
+            }
+        }
+    }
+
+    fclose(fp);
+    *out_hash = h;
+    return CMCP_OK;
 }
 
 cmcp_status_t cmcp_check_kv_compat(

@@ -3,6 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+#  ifndef WIN32_LEAN_AND_MEAN
+#    define WIN32_LEAN_AND_MEAN
+#  endif
+#  include <windows.h>
+#else
+#  include <pthread.h>
+#endif
+
 #define TEST_CHECK(cond)                                                       \
     do {                                                                       \
         if (!(cond)) {                                                         \
@@ -257,8 +266,84 @@ static void test_shm_channel(void) {
     printf("[PASS] test_shm_channel\n");
 }
 
+typedef struct crc_thread_arg {
+    uint32_t expected_crc;
+    int      ok;
+} crc_thread_arg_t;
+
+#ifdef _WIN32
+static DWORD WINAPI crc_worker_proc(LPVOID arg) {
+#else
+static void *crc_worker_proc(void *arg) {
+#endif
+    crc_thread_arg_t *t = (crc_thread_arg_t *)arg;
+    const char *msg = "cmcp-concurrent-crc32c-payload-2026";
+    size_t len = strlen(msg);
+    int i;
+    t->ok = 1;
+    for (i = 0; i < 1000; ++i) {
+        uint32_t got = cmcp_crc32c(0u, msg, len);
+        if (got != t->expected_crc) {
+            t->ok = 0;
+            break;
+        }
+    }
+#ifdef _WIN32
+    return 0u;
+#else
+    return NULL;
+#endif
+}
+
+static void test_crc32c_concurrency_and_fingerprint(void) {
+    const char *msg = "cmcp-concurrent-crc32c-payload-2026";
+    uint32_t expected = cmcp_crc32c(0u, msg, strlen(msg));
+    crc_thread_arg_t args[8];
+    int i;
+#ifdef _WIN32
+    HANDLE threads[8];
+    for (i = 0; i < 8; ++i) {
+        args[i].expected_crc = expected;
+        args[i].ok = 0;
+        threads[i] = CreateThread(NULL, 0u, crc_worker_proc, &args[i], 0u, NULL);
+        TEST_CHECK(threads[i] != NULL);
+    }
+    WaitForMultipleObjects(8u, threads, TRUE, INFINITE);
+    for (i = 0; i < 8; ++i) {
+        CloseHandle(threads[i]);
+        TEST_CHECK(args[i].ok == 1);
+    }
+#else
+    pthread_t threads[8];
+    for (i = 0; i < 8; ++i) {
+        args[i].expected_crc = expected;
+        args[i].ok = 0;
+        TEST_CHECK(pthread_create(&threads[i], NULL, crc_worker_proc, &args[i]) == 0);
+    }
+    for (i = 0; i < 8; ++i) {
+        TEST_CHECK(pthread_join(threads[i], NULL) == 0);
+        TEST_CHECK(args[i].ok == 1);
+    }
+#endif
+
+    {
+        FILE *fp = fopen("cmcp_fp_test.bin", "wb");
+        uint64_t h1 = 0u, h2 = 0u;
+        TEST_CHECK(fp != NULL);
+        fwrite("GGUF_TEST_MODEL_BYTES_1234", 1u, 26u, fp);
+        fclose(fp);
+        TEST_CHECK(cmcp_fingerprint_file("cmcp_fp_test.bin", &h1) == CMCP_OK);
+        TEST_CHECK(cmcp_fingerprint_file("cmcp_fp_test.bin", &h2) == CMCP_OK);
+        TEST_CHECK(h1 != 0u && h1 == h2);
+        remove("cmcp_fp_test.bin");
+        TEST_CHECK(cmcp_fingerprint_file("nonexistent_file_xyz.bin", &h1) == CMCP_ERR_IO);
+    }
+    printf("[PASS] test_crc32c_concurrency_and_fingerprint\n");
+}
+
 int main(void) {
     test_crc32c();
+    test_crc32c_concurrency_and_fingerprint();
     test_header_roundtrip_and_corruption();
     test_tlv_and_compression();
     test_compat_and_kv_validation();

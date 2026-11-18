@@ -143,6 +143,84 @@ class CMCPContext(BaseModel):
             records.append((0x08, dec.model_dump_json(exclude_defaults=True).encode("utf-8")))
         return records
 
+    @staticmethod
+    def _pack_str_tuple(*fields: str) -> bytes:
+        import struct
+
+        parts = []
+        for f in fields:
+            b = f.encode("utf-8")
+            parts.append(struct.pack("<H", len(b)) + b)
+        return b"".join(parts)
+
+    @staticmethod
+    def _unpack_str_tuple(data: bytes, count: int) -> Tuple[str, ...]:
+        import struct
+
+        pos = 0
+        out = []
+        for _ in range(count):
+            (slen,) = struct.unpack_from("<H", data, pos)
+            pos += 2
+            out.append(data[pos : pos + slen].decode("utf-8"))
+            pos += slen
+        return tuple(out)
+
+    def to_typed_tlv_records(self) -> List[Tuple[int, bytes]]:
+        """Convert structured fields into pure binary length-prefixed TLV records (no JSON)."""
+        records: List[Tuple[int, bytes]] = []
+        for c in self.concepts:
+            records.append((0x01, self._pack_str_tuple(c)))
+        for e in self.entities:
+            records.append((0x02, self._pack_str_tuple(e.name, e.kind, e.value)))
+        for r in self.relations:
+            records.append((0x03, self._pack_str_tuple(r.src, r.rel, r.dst)))
+        for ins in self.instructions:
+            records.append((0x04, self._pack_str_tuple(ins.text, ins.priority)))
+        for con in self.constraints:
+            records.append((0x05, self._pack_str_tuple(con.rule, con.scope)))
+        for ev in self.evidences:
+            records.append((0x06, self._pack_str_tuple(ev.id, ev.claim, ev.source)))
+        for ref in self.references:
+            records.append((0x07, self._pack_str_tuple(ref.id, ref.uri, ref.digest, ref.resolved_text)))
+        for dec in self.decisions:
+            records.append((0x08, self._pack_str_tuple(dec.topic, dec.choice, dec.rationale)))
+        return records
+
+    @classmethod
+    def from_typed_tlv_records(
+        cls,
+        records: List[Tuple[int, bytes]],
+        task_id: str = "",
+    ) -> "CMCPContext":
+        ctx = cls(task_id=task_id)
+        for tag, val in records:
+            if tag == 0x01:
+                (c,) = cls._unpack_str_tuple(val, 1)
+                ctx.concepts.append(c)
+            elif tag == 0x02:
+                name, kind, value = cls._unpack_str_tuple(val, 3)
+                ctx.entities.append(Entity(name=name, kind=kind, value=value))
+            elif tag == 0x03:
+                src, rel, dst = cls._unpack_str_tuple(val, 3)
+                ctx.relations.append(Relation(src=src, rel=rel, dst=dst))
+            elif tag == 0x04:
+                text, prio = cls._unpack_str_tuple(val, 2)
+                ctx.instructions.append(Instruction(text=text, priority=prio))
+            elif tag == 0x05:
+                rule, scope = cls._unpack_str_tuple(val, 2)
+                ctx.constraints.append(Constraint(rule=rule, scope=scope))
+            elif tag == 0x06:
+                ev_id, claim, source = cls._unpack_str_tuple(val, 3)
+                ctx.evidences.append(Evidence(id=ev_id, claim=claim, source=source))
+            elif tag == 0x07:
+                ref_id, uri, digest, resolved = cls._unpack_str_tuple(val, 4)
+                ctx.references.append(Reference(id=ref_id, uri=uri, digest=digest, resolved_text=resolved))
+            elif tag == 0x08:
+                topic, choice, rationale = cls._unpack_str_tuple(val, 3)
+                ctx.decisions.append(Decision(topic=topic, choice=choice, rationale=rationale))
+        return ctx
+
     @classmethod
     def from_tlv_records(
         cls,

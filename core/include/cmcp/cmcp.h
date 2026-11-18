@@ -247,6 +247,10 @@ CMCP_API void cmcp_model_profile_init(
     cmcp_model_profile_t *profile,
     const char           *arch_name);
 
+CMCP_API cmcp_status_t cmcp_fingerprint_file(
+    const char *path,
+    uint64_t   *out_hash);
+
 CMCP_API cmcp_status_t cmcp_check_kv_compat(
     const cmcp_model_profile_t *src,
     const cmcp_model_profile_t *dst,

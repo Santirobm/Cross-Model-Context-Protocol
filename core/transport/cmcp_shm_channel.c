@@ -98,6 +98,11 @@ static cmcp_status_t channel_alloc_common(
         if (create_new) {
             ch->shm_handle = CreateFileMappingA(
                 INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0u, total_size, ch->name);
+            if (ch->shm_handle != NULL && GetLastError() == ERROR_ALREADY_EXISTS) {
+                CloseHandle(ch->shm_handle);
+                free(ch);
+                return CMCP_ERR_IO;
+            }
         } else {
             ch->shm_handle = OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, ch->name);
         }
