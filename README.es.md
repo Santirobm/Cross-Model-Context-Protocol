@@ -1,64 +1,50 @@
 # Cross-Model Context Protocol (CMCP)
 
-Protocolo de investigación e implementación en C99/Python para **transferencia incremental de contexto estructurado** entre agentes LLM heterogéneos.
+**Protocolo independiente de memoria semántica incremental e implementación en C99/Python para sistemas multiagente y modelos LLM heterogéneos.**
 
-> **Alcance y Nota de Honestidad:** CMCP evalúa *transferencia contextual* (hechos estructurados, relaciones, restricciones, decisiones y referencias incrementales), **no** transferencia de KV-cache entre arquitecturas distintas. Los experimentos controlados de CMCP 2.1 (`SmolLM2-135M -> Qwen2.5-0.5B`) demostraron que la proyección lineal/Ridge de KV-cache entre arquitecturas diferentes colapsa funcionalmente (`PPL = 493,744`, `EM = 0.0`), y la inyección latente en `inputs_embeds` sin entrenamiento conjunto no transfiere hechos (`EM = 0.0`).
-
----
-
-## 1. Qué problema resuelve CMCP
-
-En flujos multi-agente, reenviar todo el historial (`full_history`) o JSON verboso en cada traspaso incrementa los tokens de entrada, la latencia de prefill y el riesgo de arrastrar hechos obsoletos o contradictorios.
-
-CMCP separa:
-- **Transferencia Contextual (Nivel A — Funcional):** Framing binario TLV tipado (`cmcp.dll` / `libcmcp.a`), integridad CRC32C, estado versionado con tombstones/invalidación y referencias incrementales.
-- **Transferencia de Estado Interno / KV (Nivel B — Refutada sin entrenamiento E2E):** Documentada como inviable vía adaptadores lineales entre arquitecturas heterogéneas; `cmcp_check_kv_compat()` rechaza de forma segura estados KV incompatibles.
+> **Estado del Proyecto:** Implementado y evaluado empíricamente (`main`, CMCP 2.2b). CMCP transfiere *estado semántico estructurado* (hechos, entidades, relaciones, restricciones, decisiones y deltas) sobre canales agnósticos al modelo, **no** tensores de KV-cache entre arquitecturas distintas.
 
 ---
 
-## 2. Resultados Observados y Limitaciones (Validación Multi-Turno CMCP 2.2, `n = 50` Escenarios Eval Disjuntos)
+## 1. Problema y Arquitectura
 
-Evaluado en 50 escenarios de 8 turnos (5 dominios no vistos, 2 consultas/escenario = 100 puntos/método) con bootstrap agrupado por escenario e IC 95% ([FINAL_RESEARCH_REPORT_V3.md](FINAL_RESEARCH_REPORT_V3.md)):
+En pipelines multiagente, reenviar todo el historial (`full_history`) o JSON verboso en cada traspaso incrementa tokens, latencia de prefill y exposición a turnos obsoletos. CMCP separa la **Transferencia Contextual (Nivel A — Funcional)** de la **Transferencia KV/Latente (Nivel B — Incompatible entre arquitecturas)**:
 
-| Configuración y Método | Bytes Wire | Tokens Entrada | E2E ms | Exact Match | Rel Rec | Constr Sat | Task Comp |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| **Hetero (`Qwen2.5-0.5B -> Llama-3.2-1B`)** | | | | | | | |
-| `full_history` | 686.4 | 236.0 | **2,516.6** | **0.62** | **1.00** | **0.85** | **0.77** |
-| `rolling_summary` | 709.8 | **108.6** | 8,241.2 | 0.40 | 0.50 | 0.56 | 0.40 |
-| `json_structured` | 799.6 | 286.7 | 2,759.9 | 0.40 | **1.00** | 0.58 | 0.47 |
-| `cmcp_incremental` (ext. det.) | **250.0** | 136.4 | 2,739.6 | 0.57 | 0.74 | 0.72 | 0.58 |
-| `cmcp_inc_llm_ext` (ext. LLM 0.5B) | 474.6 | 218.6 | 6,993.6 | 0.20 | 0.61 | 0.55 | 0.20 |
-| **Homo (`Qwen2.5-0.5B -> Qwen2.5-0.5B`)** | | | | | | | |
-| `full_history` | 686.4 | 272.9 | 1,916.5 | 0.53 | **0.95** | 0.59 | 0.54 |
-| `cmcp_incremental` (ext. det.) | **250.0** | **159.7** | **1,793.1** | **0.75** | 0.90 | **0.80** | **0.88** |
-
-**Qué funcionó:**
-- **Eficiencia Wire y Tokens:** `cmcp_incremental` reduce bytes en red en **63.6%** en eval de 8 turnos y **91.5%** acumulado a 40 turnos (`94,625 B -> 8,005 B`, `311 B` constantes por turno), reduciendo tokens de entrada en **41.5–42.2%** y prefill en **42.3%** (`2.63x` a 40 turnos).
-- **Ganancia Homogénea:** En `Qwen2.5-0.5B -> Qwen2.5-0.5B`, `cmcp_incremental` supera a `full_history` tanto en latencia E2E (`-123.4 ms [-156.5, -92.7]`) como en calidad (`EM +0.22 [+0.14, +0.30]`, `task_completion +0.34 [+0.27, +0.41]`).
-
-**Limitaciones y resultados negativos:**
-- **Brecha Heterogénea en E2E y Relaciones (`Llama-3.2-1B`):** `cmcp_incremental` empata en `EM` (`-0.05 [-0.12, +0.02]`) y el renderizado XML-lite `R3` eleva `EM` a `0.61` (`-0.01` vs `0.62`), pero `Llama-3.2-1B` sigue generando más tokens (`+17.8` tokens, `+442.1 ms` E2E) y cae en `relation_recovery` (`-0.30`). En una segunda pareja (`Qwen2.5-0.5B -> SmolLM2-360M`), `cmcp_r3` logra `-396.0 ms` de aceleración E2E y `+0.15` en `relation_recovery`, pero pierde `-0.15 EM` ([FINAL_RESEARCH_REPORT_V4.md](FINAL_RESEARCH_REPORT_V4.md)).
-- **Extracción sobre Diálogos No Estructurados:** En 30 diálogos naturales con revisiones implícitas, `full_history` colapsa (`0.00 EM`, `0.80` tasa obsoleta), `oracle_structured` (cota superior `tool_use`) logra `0.267 EM` / `0.90` restricciones, mientras que `deterministic_nlp_rules` cae a `0.556` de precisión/recall y `hybrid_gated` (`0.5B`) suma `3,704 ms` sin recuperar hechos faltantes ([FINAL_RESEARCH_REPORT_V4.md](FINAL_RESEARCH_REPORT_V4.md)).
-- **Extracción LLM 0.5B y Rolling Summary:** `rolling_summary` (`+5,725 ms E2E`, `-0.22 EM`) y `cmcp_inc_llm_ext` (`+4,477 ms E2E`, `-0.42 EM`) son más lentos y mucho menos precisos que `full_history` y la extracción determinista (`0.06 ms`).
-- **KV / Latente Cross-Arch:** Refutado para transferencia factual sin entrenamiento end-to-end ([FINAL_RESEARCH_REPORT_V2.md](FINAL_RESEARCH_REPORT_V2.md)).
-
----
-
-## 3. Compilación, Tests y Reproducción
-
-```sh
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-ctest --test-dir build --output-on-failure
-
-.venv\Scripts\pytest.exe tests/ -v
-.venv\Scripts\python.exe -m experiments.cmcp22.run_multiturn_benchmark --split eval --reps 1 --max-tokens 64 --model-a $CMCP_MODEL_A --model-b $CMCP_MODEL_B --tag eval_hetero
-.venv\Scripts\python.exe -m experiments.cmcp22.run_scaling_benchmark --model $CMCP_MODEL_B --tag scaling_v1 --turns 5 10 20 40
-.venv\Scripts\python.exe experiments/cmcp22/audit/validate_cmcp22.py
+```mermaid
+flowchart LR
+    A["Agente A (ej. Qwen2.5-0.5B)<br/>Turno / Evento Tool"] --> E["Extracción de Estado<br/>(tool_use nativo / Reglas)"]
+    E --> S["CMCPStateStore<br/>UPSERT / INVALIDATE / seq / Tombstones"]
+    S --> F["TLV Binario + zlib + CRC32C<br/>(~250 B delta incremental)"]
+    F --> R["Renderizador Semántico<br/>(R1 / R2 / R3 XML-lite)"]
+    R --> B["Agente B (ej. Llama-3.2-1B / SmolLM2-360M)"]
 ```
 
+- **Estado tipado y versionado (`representations/state_store.py`):** `CMCPStateStore` gestiona operaciones `StateOp` (`UPSERT`, `INVALIDATE`), idempotencia ante duplicados, rechazo de mensajes fuera de orden, prevención de resurrección mediante tombstones, `checkout_seq()` (`0,078 ms` a 40 turnos) y `compact()`.
+- **Formato binario (`representations/binary/`, `core/`):** Framing TLV comprimido con zlib e integridad CRC32C.
+
 ---
 
-## 4. Licencia
+## 2. Resultados y Limitaciones (CMCP 2.2 / 2.2b, Benchmarks Propios en CPU)
 
-Apache License 2.0 — ver [LICENSE](LICENSE).
+Evaluado en Windows 10 Pro x64, Intel Core i5-13500 (solo CPU, `threads=4`, greedy) sobre `n = 50` escenarios `eval` disjuntos (5 dominios no vistos, 3 reps) con bootstrap agrupado por escenario (IC 95%). Ver [FINAL_RESEARCH_REPORT_V3.md](FINAL_RESEARCH_REPORT_V3.md) y [FINAL_RESEARCH_REPORT_V4.md](FINAL_RESEARCH_REPORT_V4.md).
+
+- **Homogéneo (`Qwen2.5-0.5B -> Qwen2.5-0.5B`):** **Demostrado** (`+0,22 EM`, `-101,3 ms` E2E vs `full_history`, `0,00` tasa obsoleta).
+- **Heterogéneo 1 (`Qwen2.5-0.5B -> Llama-3.2-1B`, `R3`):** **Parcialmente demostrado** (`0,61` vs `0,62 EM`, `-257,6 ms` prefill, pero `+442,1 ms` E2E por verborragia de salida y `-0,30` en `relation_recovery`).
+- **Heterogéneo 2 (`Qwen2.5-0.5B -> SmolLM2-360M`, `R3`):** **Parcialmente demostrado** (`-396,0 ms` E2E, `+0,15` `relation_recovery`, `0,00` vs `0,28` tasa obsoleta, pero `-0,15 EM`).
+- **Extracción desde texto natural no estructurado (`n = 30` diálogos):** `oracle_structured` (`tool_use`) logra precisión/recall `1,000` (`0,039 ms`), mientras que `deterministic_nlp_rules` cae a `0,556` bajo variaciones lingüísticas y `hybrid_gated` (`0,5B`) suma `3.704 ms` sin recuperar hechos omitidos.
+- **Transferencia KV / Latente Cross-Arch:** **Refutada** en CMCP 2.1 (`PPL = 493.744`, `EM = 0,0`, [FINAL_RESEARCH_REPORT_V2.md](FINAL_RESEARCH_REPORT_V2.md)).
+
+---
+
+## 3. Integración Opcional con Vect-Link
+
+CMCP es **100% independiente** de Vect-Link. Para escenarios con procesos compatibles que deseen sumar reutilización de KV-cache en memoria compartida, consultar la integración opcional **[VectLink-CMCP](https://github.com/Santirobm/VectLink-CMCP)** junto a **[Vect-Link](https://github.com/Santirobm/Vect-Link)**.
+
+---
+
+## 4. Documentación, Tests y Licencia
+
+- **English README (Primary):** [README.md](README.md)
+- **Informes:** [V2](FINAL_RESEARCH_REPORT_V2.md) | [V3](FINAL_RESEARCH_REPORT_V3.md) | [V4](FINAL_RESEARCH_REPORT_V4.md)
+- **Tests:** `ctest --test-dir build`, `pytest tests/ -v`, `python experiments/cmcp22b/audit/validate_cmcp22b.py`.
+- **Licencia:** Apache License 2.0 — [LICENSE](LICENSE).
