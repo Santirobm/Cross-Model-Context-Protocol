@@ -107,12 +107,14 @@ def serialize(
     state: CMCPStateStore,
     query: Optional[str] = None,
     mode: Literal["compact", "anchored"] = "compact",
+    *,
+    expand_hops: int = 0,
 ) -> str:
     """Serialize CMCPStateStore using either 'compact' (task-selected) or 'anchored' (full canonical) mode."""
     if mode == "compact":
         if query is None or not isinstance(query, str) or not query.strip():
             raise ValueError("`query` must be a non-empty string when mode='compact'.")
-        selected = select_for_task(query, state)
+        selected = select_for_task(query, state, expand_hops=expand_hops)
         return render_selected_unified(selected, state)
     if mode == "anchored":
         return state.render_for_llm(style="r3_canon")
@@ -166,12 +168,14 @@ def serialize(
     state: CMCPStateStore,
     query: Optional[str] = None,
     mode: Literal["compact", "anchored"] = "compact",
+    *,
+    expand_hops: int = 0,
 ) -> str:
     """Serialize CMCPStateStore using either 'compact' (task-selected) or 'anchored' (full canonical) mode."""
     if mode == "compact":
         if query is None or not isinstance(query, str) or not query.strip():
             raise ValueError("`query` must be a non-empty string when mode='compact'.")
-        selected = select_for_task(query, state)
+        selected = select_for_task(query, state, expand_hops=expand_hops)
         return render_selected_unified(selected, state)
     if mode == "anchored":
         return state.render_for_llm(style="r3_canon")

@@ -1,0 +1,161 @@
+{
+  "model": "SmolLM2-360M-Instruct-Q4_K_M.gguf",
+  "turns": [
+    5,
+    10,
+    20,
+    40
+  ],
+  "variants": [
+    "baseline_r3",
+    "compact_h0",
+    "compact_h1",
+    "anchored"
+  ],
+  "rows": [
+    {
+      "horizon_turns": 5,
+      "variant": "baseline_r3",
+      "select_ms": 0.0197,
+      "input_tokens": 181,
+      "output_tokens": 32,
+      "prefill_ms": 459.773,
+      "decode_ms": 473.862
+    },
+    {
+      "horizon_turns": 5,
+      "variant": "compact_h0",
+      "select_ms": 0.3132,
+      "input_tokens": 106,
+      "output_tokens": 32,
+      "prefill_ms": 302.34,
+      "decode_ms": 452.582
+    },
+    {
+      "horizon_turns": 5,
+      "variant": "compact_h1",
+      "select_ms": 0.2527,
+      "input_tokens": 121,
+      "output_tokens": 32,
+      "prefill_ms": 336.592,
+      "decode_ms": 433.422
+    },
+    {
+      "horizon_turns": 5,
+      "variant": "anchored",
+      "select_ms": 0.0463,
+      "input_tokens": 181,
+      "output_tokens": 32,
+      "prefill_ms": 512.535,
+      "decode_ms": 470.31
+    },
+    {
+      "horizon_turns": 10,
+      "variant": "baseline_r3",
+      "select_ms": 0.023,
+      "input_tokens": 266,
+      "output_tokens": 32,
+      "prefill_ms": 778.918,
+      "decode_ms": 473.1
+    },
+    {
+      "horizon_turns": 10,
+      "variant": "compact_h0",
+      "select_ms": 0.181,
+      "input_tokens": 107,
+      "output_tokens": 32,
+      "prefill_ms": 309.786,
+      "decode_ms": 446.035
+    },
+    {
+      "horizon_turns": 10,
+      "variant": "compact_h1",
+      "select_ms": 0.1994,
+      "input_tokens": 122,
+      "output_tokens": 32,
+      "prefill_ms": 345.458,
+      "decode_ms": 449.21
+    },
+    {
+      "horizon_turns": 10,
+      "variant": "anchored",
+      "select_ms": 0.0518,
+      "input_tokens": 266,
+      "output_tokens": 32,
+      "prefill_ms": 793.121,
+      "decode_ms": 471.107
+    },
+    {
+      "horizon_turns": 20,
+      "variant": "baseline_r3",
+      "select_ms": 0.0297,
+      "input_tokens": 448,
+      "output_tokens": 32,
+      "prefill_ms": 1357.314,
+      "decode_ms": 547.816
+    },
+    {
+      "horizon_turns": 20,
+      "variant": "compact_h0",
+      "select_ms": 0.249,
+      "input_tokens": 107,
+      "output_tokens": 32,
+      "prefill_ms": 333.173,
+      "decode_ms": 452.398
+    },
+    {
+      "horizon_turns": 20,
+      "variant": "compact_h1",
+      "select_ms": 0.2747,
+      "input_tokens": 122,
+      "output_tokens": 32,
+      "prefill_ms": 358.073,
+      "decode_ms": 469.219
+    },
+    {
+      "horizon_turns": 20,
+      "variant": "anchored",
+      "select_ms": 0.071,
+      "input_tokens": 448,
+      "output_tokens": 32,
+      "prefill_ms": 1324.58,
+      "decode_ms": 507.966
+    },
+    {
+      "horizon_turns": 40,
+      "variant": "baseline_r3",
+      "select_ms": 0.0496,
+      "input_tokens": 812,
+      "output_tokens": 32,
+      "prefill_ms": 2524.52,
+      "decode_ms": 535.501
+    },
+    {
+      "horizon_turns": 40,
+      "variant": "compact_h0",
+      "select_ms": 0.4008,
+      "input_tokens": 107,
+      "output_tokens": 32,
+      "prefill_ms": 308.584,
+      "decode_ms": 471.412
+    },
+    {
+      "horizon_turns": 40,
+      "variant": "compact_h1",
+      "select_ms": 0.4331,
+      "input_tokens": 122,
+      "output_tokens": 32,
+      "prefill_ms": 349.345,
+      "decode_ms": 459.441
+    },
+    {
+      "horizon_turns": 40,
+      "variant": "anchored",
+      "select_ms": 0.0935,
+      "input_tokens": 812,
+      "output_tokens": 32,
+      "prefill_ms": 2976.381,
+      "decode_ms": 554.507
+    }
+  ]
+}

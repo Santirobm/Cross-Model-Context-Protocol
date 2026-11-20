@@ -23,6 +23,7 @@ dev = [
 [tool.setuptools.packages.find]
 include = [
     "representations*",
+    "ingestion*",
     "adapters*",
     "experiments*",
     "benchmarks*",
