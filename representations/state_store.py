@@ -401,6 +401,16 @@ class CMCPStateStore:
                 lines.append(f"FACT {k}: {v}")
         return "\n".join(lines)
 
+    def serialize(
+        self,
+        query: Optional[str] = None,
+        mode: Literal["compact", "anchored"] = "compact",
+    ) -> str:
+        """Serialize this store in 'compact' (task-selected) or 'anchored' (full canonical) mode."""
+        from .adapters import serialize as _serialize
+
+        return _serialize(self, query=query, mode=mode)
+
     def compact(self, prune_tombstones_before_seq: Optional[int] = None) -> int:
         """Trim per-entry history and optionally prune old tombstones; returns bytes freed estimate."""
         removed = 0

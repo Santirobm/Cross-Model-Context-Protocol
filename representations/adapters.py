@@ -7,9 +7,9 @@ without any benchmark-specific keys or query-turn branching.
 
 from __future__ import annotations
 
-from typing import Dict, List, Set
+from typing import Dict, List, Literal, Optional, Set
 
-from .selector import SelectedContext
+from .selector import SelectedContext, select_for_task
 from .state_store import CMCPStateStore, FactEntry, canonical_value
 
 
@@ -27,7 +27,7 @@ def _dedup_entity_value(raw_val: str, active_fact_values: Set[str]) -> str:
     return "; ".join(kept) if kept else raw_val
 
 
-def _collect_items(sel: SelectedContext, store: CMCPStateStore) -> Dict[str, List[tuple[str, str]]]:
+def _collect_items(sel: SelectedContext, store: CMCPStateStore, *, dedup: bool = True) -> Dict[str, List[tuple[str, str]]]:
     groups: Dict[str, List[tuple[str, str]]] = {
         "entity": [],
         "fact": [],
@@ -43,7 +43,7 @@ def _collect_items(sel: SelectedContext, store: CMCPStateStore) -> Dict[str, Lis
     }
     for e in selected_entries:
         val = canonical_value(e.category, e.key, e.value)
-        if e.category == "entity":
+        if e.category == "entity" and dedup:
             val = _dedup_entity_value(val, active_fact_vals)
         groups.setdefault(e.category, []).append((e.key, val))
     return groups
@@ -71,22 +71,57 @@ def _append_tail(sections: List[str], sel: SelectedContext, store: CMCPStateStor
         sections.append("<evidence>\n" + "\n".join(ev_lines) + "\n</evidence>")
 
 
-def render_selected_unified(sel: SelectedContext, store: CMCPStateStore) -> str:
-    """Unified XML-lite renderer: deduplicated entities, value-safe facts, constraints after facts."""
-    groups = _collect_items(sel, store)
+def render_selected_ablation(
+    sel: SelectedContext,
+    store: CMCPStateStore,
+    *,
+    dedup: bool,
+    unified_order: bool,
+) -> str:
+    """2x2 factorial ablation renderer (benchmark-only): dedup x section order."""
+    groups = _collect_items(sel, store, dedup=dedup)
     sections: List[str] = []
     if groups["relation"]:
         sections.append("<relations>\n" + "\n".join(f"- {v}" for _, v in groups["relation"]) + "\n</relations>")
     if groups["entity"]:
         sections.append("<entities>\n" + "\n".join(f"- {k}: {v}" for k, v in groups["entity"]) + "\n</entities>")
-    if groups["fact"]:
-        sections.append("<facts>\n" + "\n".join(f"- {k} = {v}" for k, v in groups["fact"]) + "\n</facts>")
-    if groups["constraint"]:
-        sections.append("<constraints>\n" + "\n".join(f"- {v}" for _, v in groups["constraint"]) + "\n</constraints>")
-    if groups["decision"]:
-        sections.append("<decisions>\n" + "\n".join(f"- {k}={v}" for k, v in groups["decision"]) + "\n</decisions>")
+    if unified_order:
+        if groups["fact"]:
+            sections.append("<facts>\n" + "\n".join(f"- {k} = {v}" for k, v in groups["fact"]) + "\n</facts>")
+        if groups["constraint"]:
+            sections.append("<constraints>\n" + "\n".join(f"- {v}" for _, v in groups["constraint"]) + "\n</constraints>")
+        if groups["decision"]:
+            sections.append("<decisions>\n" + "\n".join(f"- {k}={v}" for k, v in groups["decision"]) + "\n</decisions>")
+    else:
+        if groups["constraint"]:
+            sections.append("<constraints>\n" + "\n".join(f"- {v}" for _, v in groups["constraint"]) + "\n</constraints>")
+        if groups["decision"]:
+            sections.append("<decisions>\n" + "\n".join(f"- {k}={v}" for k, v in groups["decision"]) + "\n</decisions>")
+        if groups["fact"]:
+            sections.append("<facts>\n" + "\n".join(f"- {k} = {v}" for k, v in groups["fact"]) + "\n</facts>")
     _append_tail(sections, sel, store)
     return "\n".join(sections)
+
+
+def serialize(
+    state: CMCPStateStore,
+    query: Optional[str] = None,
+    mode: Literal["compact", "anchored"] = "compact",
+) -> str:
+    """Serialize CMCPStateStore using either 'compact' (task-selected) or 'anchored' (full canonical) mode."""
+    if mode == "compact":
+        if query is None or not isinstance(query, str) or not query.strip():
+            raise ValueError("`query` must be a non-empty string when mode='compact'.")
+        selected = select_for_task(query, state)
+        return render_selected_unified(selected, state)
+    if mode == "anchored":
+        return state.render_for_llm(style="r3_canon")
+    raise ValueError(f"Unknown serialization mode {mode!r}; expected 'compact' or 'anchored'.")
+
+
+def render_selected_unified(sel: SelectedContext, store: CMCPStateStore) -> str:
+    """Unified XML-lite renderer: deduplicated entities, value-safe facts, constraints after facts."""
+    return render_selected_ablation(sel, store, dedup=True, unified_order=True)
 
 
 def render_selected_adapted(sel: SelectedContext, store: CMCPStateStore, receiver_family: str) -> str:
@@ -125,3 +160,19 @@ def render_selected_adapted(sel: SelectedContext, store: CMCPStateStore, receive
 
     _append_tail(sections, sel, store)
     return "\n".join(sections)
+
+
+def serialize(
+    state: CMCPStateStore,
+    query: Optional[str] = None,
+    mode: Literal["compact", "anchored"] = "compact",
+) -> str:
+    """Serialize CMCPStateStore using either 'compact' (task-selected) or 'anchored' (full canonical) mode."""
+    if mode == "compact":
+        if query is None or not isinstance(query, str) or not query.strip():
+            raise ValueError("`query` must be a non-empty string when mode='compact'.")
+        selected = select_for_task(query, state)
+        return render_selected_unified(selected, state)
+    if mode == "anchored":
+        return state.render_for_llm(style="r3_canon")
+    raise ValueError(f"Unknown serialization mode {mode!r}; expected 'compact' or 'anchored'.")

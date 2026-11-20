@@ -1,0 +1,9 @@
+horizon_turns,variant,select_ms,input_tokens,output_tokens,prefill_ms,decode_ms
+5,baseline_r3,0.022,145,32,455.981,1253.452
+5,var_d_unified,0.2953,87,32,277.516,1227.355
+10,baseline_r3,0.0188,208,32,650.079,1246.035
+10,var_d_unified,0.1593,87,32,279.065,1239.725
+20,baseline_r3,0.0261,334,32,1056.84,1325.33
+20,var_d_unified,0.3771,87,32,282.228,1248.663
+40,baseline_r3,0.0871,586,32,1914.883,1298.869
+40,var_d_unified,0.6185,87,32,286.331,1244.811
