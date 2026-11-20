@@ -1,0 +1,19 @@
+{
+  "split": "tune",
+  "num_scenarios": 8,
+  "reps": 1,
+  "max_tokens": 64,
+  "model_b_name": "Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+  "variants": [
+    "baseline_r3",
+    "var_a",
+    "var_b",
+    "var_d",
+    "ablation_d_only"
+  ],
+  "tag": "gate1_tune",
+  "dataset_sha256": "b8911a280ff429e37b589665f472265945ebd8f9223c95de242aaacc3313e776",
+  "bootstrap_seed": 42,
+  "decoding": "greedy",
+  "extra_llm_calls": 0
+}

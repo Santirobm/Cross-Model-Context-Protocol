@@ -1,0 +1,17 @@
+{
+  "split": "eval",
+  "num_scenarios": 50,
+  "reps": 3,
+  "max_tokens": 64,
+  "model_b_name": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+  "variants": [
+    "baseline_r3",
+    "var_d_unified",
+    "var_d_adapted"
+  ],
+  "tag": "gate2_eval_qwen",
+  "dataset_sha256": "b8911a280ff429e37b589665f472265945ebd8f9223c95de242aaacc3313e776",
+  "bootstrap_seed": 42,
+  "decoding": "greedy",
+  "extra_llm_calls": 0
+}

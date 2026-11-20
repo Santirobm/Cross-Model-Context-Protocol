@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import time
 from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Literal, Optional, Tuple
@@ -11,6 +12,17 @@ from typing import Any, Dict, List, Literal, Optional, Tuple
 
 OpKind = Literal["UPSERT", "INVALIDATE"]
 ApplyStatus = Literal["APPLIED", "DUPLICATE_IGNORED", "STALE_IGNORED", "CONFLICT_RESOLVED"]
+RelationType = Literal[
+    "DEPENDS_ON",
+    "REPLACES",
+    "CONSTRAINS",
+    "CONTRADICTS",
+    "PRECEDES",
+    "EXCEPTION_TO",
+    "PART_OF",
+    "CONDITIONED_BY",
+    "ROUTES_TO",
+]
 
 
 class ReferenceMissingError(KeyError):
@@ -29,6 +41,9 @@ class StateOp:
     agent_id: str = "agent_a"
     timestamp: str = ""
     parent_state_hash: str = ""
+    source: str = "system"
+    confidence: float = 1.0
+    evidence_ref: Optional[str] = None
 
     def payload_digest(self) -> str:
         raw = json.dumps(
@@ -51,7 +66,52 @@ class FactEntry:
     timestamp: str
     tombstone: bool
     digest: str
+    source: str = "system"
+    confidence: float = 1.0
+    evidence_ref: Optional[str] = None
     history: List[Dict[str, Any]] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class TypedRelation:
+    src_id: str
+    rel_type: RelationType
+    dst_id: str
+    seq: int
+    active: bool = True
+
+
+class EvidenceStore:
+    """Off-wire store for recoverable source excerpts keyed by evidence_ref."""
+
+    def __init__(self) -> None:
+        self._items: Dict[str, str] = {}
+
+    def register(self, ref_id: str, raw_excerpt: str) -> str:
+        self._items[ref_id] = raw_excerpt
+        return ref_id
+
+    def resolve(self, ref_id: str) -> Optional[str]:
+        return self._items.get(ref_id)
+
+    def search_matching(self, query_terms: set[str]) -> Optional[Tuple[str, str]]:
+        best: Optional[Tuple[int, str, str]] = None
+        for ref_id, text in self._items.items():
+            tl = text.lower()
+            hits = sum(1 for t in query_terms if t in tl)
+            if hits > 0 and (best is None or hits > best[0]):
+                best = (hits, ref_id, text)
+        return (best[1], best[2]) if best else None
+
+
+def canonical_value(category: str, key: str, value: Any) -> str:
+    """Normalize a state value by stripping inline parenthetical history clutter."""
+    s = str(value).strip()
+    # Strip inline '(from:...)' annotations; history lives in entry.history / checkout_seq()
+    s = re.sub(r"\(from:[^)]+\)", "", s).strip()
+    if category == "decision" and s.startswith(f"{key}="):
+        s = s[len(key) + 1 :]
+    return s
 
 
 @dataclass
@@ -72,7 +132,38 @@ class CMCPStateStore:
         self._snapshots: Dict[str, Dict[str, Any]] = {}
         self._op_log: List[StateOp] = []
         self._conflicts: List[ConflictRecord] = []
+        self._relations: List[TypedRelation] = []
+        self.evidence = EvidenceStore()
         self.compaction_count: int = 0
+
+    def add_relation(self, src_id: str, rel_type: RelationType, dst_id: str, seq: int) -> None:
+        edge = TypedRelation(src_id=src_id, rel_type=rel_type, dst_id=dst_id, seq=seq, active=True)
+        if edge not in self._relations:
+            self._relations.append(edge)
+
+    def active_relations(self) -> List[TypedRelation]:
+        return [r for r in self._relations if r.active]
+
+    def relations_for(self, fact_id: str) -> List[TypedRelation]:
+        return [r for r in self._relations if r.active and (r.src_id == fact_id or r.dst_id == fact_id)]
+
+    def _infer_relations_for_op(self, op: StateOp, replaced_prev: bool) -> None:
+        if replaced_prev:
+            rel_t: RelationType = "CONTRADICTS" if op.kind == "INVALIDATE" else "REPLACES"
+            self.add_relation(op.fact_id, rel_t, op.fact_id, op.seq)
+        if op.kind == "INVALIDATE":
+            return
+        v_str = str(op.value)
+        if op.category == "relation" and "->" in v_str:
+            for fid, ent in self._entries.items():
+                if not ent.tombstone and ent.category == "entity" and ent.key in v_str:
+                    self.add_relation(op.fact_id, "ROUTES_TO", fid, op.seq)
+        elif op.category in ("constraint", "decision"):
+            for fid, ent in self._entries.items():
+                if not ent.tombstone and ent.category == "entity":
+                    if ent.key in v_str or "standby" not in str(ent.value).lower():
+                        rel_kind: RelationType = "CONSTRAINS" if op.category == "constraint" else "CONDITIONED_BY"
+                        self.add_relation(op.fact_id, rel_kind, fid, op.seq)
 
     def state_hash(self) -> str:
         active = {
@@ -138,7 +229,12 @@ class CMCPStateStore:
             cur.timestamp = op.timestamp
             cur.tombstone = op.kind == "INVALIDATE"
             cur.digest = digest
+            cur.source = op.source
+            cur.confidence = op.confidence
+            if op.evidence_ref is not None:
+                cur.evidence_ref = op.evidence_ref
             self._op_log.append(op)
+            self._infer_relations_for_op(op, replaced_prev=True)
             return status
 
         self._entries[op.fact_id] = FactEntry(
@@ -152,8 +248,12 @@ class CMCPStateStore:
             timestamp=op.timestamp,
             tombstone=(op.kind == "INVALIDATE"),
             digest=digest,
+            source=op.source,
+            confidence=op.confidence,
+            evidence_ref=op.evidence_ref,
         )
         self._op_log.append(op)
+        self._infer_relations_for_op(op, replaced_prev=False)
         return "APPLIED"
 
     def save_snapshot(self, ref_id: str) -> str:
@@ -227,6 +327,33 @@ class CMCPStateStore:
             if facts:
                 parts.append("Current facts: " + "; ".join(facts) + ".")
             return "\n".join(parts)
+
+        if style == "r3_canon":
+            buckets_c: Dict[str, List[str]] = {
+                "relations": [],
+                "entities": [],
+                "constraints": [],
+                "decisions": [],
+                "facts": [],
+            }
+            for _, item in active.items():
+                cat, k = item["category"], item["key"]
+                v = canonical_value(cat, k, item["value"])
+                if cat == "relation":
+                    buckets_c["relations"].append(f"- {v}")
+                elif cat == "entity":
+                    buckets_c["entities"].append(f"- {k}: {v}")
+                elif cat == "constraint":
+                    buckets_c["constraints"].append(f"- {v}")
+                elif cat == "decision":
+                    buckets_c["decisions"].append(f"- {k}={v}")
+                else:
+                    buckets_c["facts"].append(f"- {k}: {v}")
+            sections_c: List[str] = []
+            for tag in ("relations", "entities", "constraints", "decisions", "facts"):
+                if buckets_c[tag]:
+                    sections_c.append(f"<{tag}>\n" + "\n".join(buckets_c[tag]) + f"\n</{tag}>")
+            return "\n".join(sections_c)
 
         if style == "r3":
             buckets: Dict[str, List[str]] = {
