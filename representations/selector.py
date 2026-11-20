@@ -51,6 +51,9 @@ def select_for_task(
     use_evidence_fallback: bool = True,
     confidence_threshold: float = 0.7,
     canonicalize: bool = True,
+    expand_hops: int = 0,
+    max_expand_items: int = 4,
+    max_expand_tokens: int = 48,
 ) -> SelectedContext:
     """Select a minimal task-relevant subset of CMCPStateStore without LLM calls."""
     q_terms = _tokenize(query)
@@ -110,7 +113,7 @@ def select_for_task(
 
     # Component B: 1-hop typed relation closure over active edges
     if use_relations and selected_ids:
-        frontier = list(selected_ids)
+        frontier = sorted(selected_ids)
         for fid in frontier:
             for rel in store.relations_for(fid):
                 if rel.rel_type in ("ROUTES_TO", "CONSTRAINS", "DEPENDS_ON", "CONDITIONED_BY", "PART_OF", "EXCEPTION_TO"):
@@ -120,6 +123,46 @@ def select_for_task(
                         if ent.key.lower() not in negated_terms and "standby" not in str(ent.value).lower():
                             if ent.category in wanted_cats or (ent.category == "entity" and "relation" in wanted_cats):
                                 selected_ids.add(other)
+
+        # Optional deterministic N-hop neighborhood expansion (budget-capped to preserve O(1) scaling)
+        if expand_hops > 0 and max_expand_items > 0 and max_expand_tokens > 0:
+            added_items = 0
+            added_tokens = 0
+            hop_frontier = sorted(selected_ids)
+            for _ in range(expand_hops):
+                next_frontier: List[str] = []
+                for fid in hop_frontier:
+                    rels = sorted(store.relations_for(fid), key=lambda r: (r.seq, r.rel_type, r.src_id, r.dst_id))
+                    for rel in rels:
+                        if rel.rel_type not in (
+                            "ROUTES_TO",
+                            "CONSTRAINS",
+                            "DEPENDS_ON",
+                            "CONDITIONED_BY",
+                            "PART_OF",
+                            "EXCEPTION_TO",
+                        ):
+                            continue
+                        other = rel.dst_id if rel.src_id == fid else rel.src_id
+                        if other in selected_ids:
+                            continue
+                        ent = store._entries.get(other)
+                        if ent is None or ent.tombstone:
+                            continue
+                        if ent.key.lower() in negated_terms or "standby" in str(ent.value).lower():
+                            continue
+                        est_toks = max(2, len(re.findall(r"[A-Za-z0-9_=-]+", f"{ent.key} {ent.value}")) + 2)
+                        if added_items + 1 > max_expand_items or added_tokens + est_toks > max_expand_tokens:
+                            break
+                        selected_ids.add(other)
+                        next_frontier.append(other)
+                        added_items += 1
+                        added_tokens += est_toks
+                    if added_items >= max_expand_items or added_tokens >= max_expand_tokens:
+                        break
+                if not next_frontier or added_items >= max_expand_items or added_tokens >= max_expand_tokens:
+                    break
+                hop_frontier = sorted(next_frontier)
 
     # Component A: Deterministic EvidenceStore fallback rule
     evidence_lines: List[str] = []
