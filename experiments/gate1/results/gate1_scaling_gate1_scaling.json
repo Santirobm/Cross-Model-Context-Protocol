@@ -1,0 +1,83 @@
+{
+  "model": "Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+  "turns": [
+    5,
+    10,
+    20,
+    40
+  ],
+  "rows": [
+    {
+      "horizon_turns": 5,
+      "variant": "baseline_r3",
+      "select_ms": 0.0222,
+      "input_tokens": 145,
+      "output_tokens": 32,
+      "prefill_ms": 469.119,
+      "decode_ms": 1276.196
+    },
+    {
+      "horizon_turns": 5,
+      "variant": "var_d",
+      "select_ms": 0.3735,
+      "input_tokens": 87,
+      "output_tokens": 32,
+      "prefill_ms": 278.663,
+      "decode_ms": 1250.941
+    },
+    {
+      "horizon_turns": 10,
+      "variant": "baseline_r3",
+      "select_ms": 0.0192,
+      "input_tokens": 208,
+      "output_tokens": 32,
+      "prefill_ms": 645.502,
+      "decode_ms": 1260.621
+    },
+    {
+      "horizon_turns": 10,
+      "variant": "var_d",
+      "select_ms": 0.2743,
+      "input_tokens": 87,
+      "output_tokens": 32,
+      "prefill_ms": 277.43,
+      "decode_ms": 1258.775
+    },
+    {
+      "horizon_turns": 20,
+      "variant": "baseline_r3",
+      "select_ms": 0.0273,
+      "input_tokens": 334,
+      "output_tokens": 32,
+      "prefill_ms": 1034.694,
+      "decode_ms": 1315.401
+    },
+    {
+      "horizon_turns": 20,
+      "variant": "var_d",
+      "select_ms": 0.4198,
+      "input_tokens": 87,
+      "output_tokens": 32,
+      "prefill_ms": 284.976,
+      "decode_ms": 1264.689
+    },
+    {
+      "horizon_turns": 40,
+      "variant": "baseline_r3",
+      "select_ms": 0.0425,
+      "input_tokens": 586,
+      "output_tokens": 32,
+      "prefill_ms": 1872.879,
+      "decode_ms": 1298.05
+    },
+    {
+      "horizon_turns": 40,
+      "variant": "var_d",
+      "select_ms": 0.7108,
+      "input_tokens": 87,
+      "output_tokens": 32,
+      "prefill_ms": 290.428,
+      "decode_ms": 1269.826
+    }
+  ]
+}

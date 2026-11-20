@@ -1,0 +1,424 @@
+{
+  "config": {
+    "split": "eval",
+    "num_scenarios": 50,
+    "reps": 2,
+    "max_tokens": 64,
+    "model_b_name": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+    "variants": [
+      "baseline_r3",
+      "var_a",
+      "var_d"
+    ],
+    "tag": "gate1_homo",
+    "dataset_sha256": "b8911a280ff429e37b589665f472265945ebd8f9223c95de242aaacc3313e776",
+    "bootstrap_seed": 42,
+    "decoding": "greedy",
+    "extra_llm_calls": 0
+  },
+  "variants": {
+    "baseline_r3": {
+      "n_scenarios": 50,
+      "n_rows": 400,
+      "input_tokens": {
+        "mean": 177.15,
+        "ci95": [
+          176.4149,
+          178.0051
+        ]
+      },
+      "output_tokens": {
+        "mean": 47.555,
+        "ci95": [
+          45.845,
+          49.24
+        ]
+      },
+      "net_tokens": {
+        "mean": 224.705,
+        "ci95": [
+          222.615,
+          226.7601
+        ]
+      },
+      "select_ms": {
+        "mean": 0.0256,
+        "ci95": [
+          0.0251,
+          0.0259
+        ]
+      },
+      "prefill_ms": {
+        "mean": 562.7718,
+        "ci95": [
+          555.0991,
+          571.0871
+        ]
+      },
+      "decode_ms": {
+        "mean": 975.9269,
+        "ci95": [
+          940.6489,
+          1010.608
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean": 1539.4207,
+        "ci95": [
+          1502.6067,
+          1576.8525
+        ]
+      },
+      "exact_match": {
+        "mean": 0.755,
+        "ci95": [
+          0.75,
+          0.765
+        ]
+      },
+      "entity_recall": {
+        "mean": 0.9367,
+        "ci95": [
+          0.915,
+          0.9567
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.885,
+        "ci95": [
+          0.85,
+          0.92
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.875,
+        "ci95": [
+          0.84,
+          0.91
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "evidence_fallback_used": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "var_a": {
+      "n_scenarios": 50,
+      "n_rows": 400,
+      "input_tokens": {
+        "mean": 172.65,
+        "ci95": [
+          171.9149,
+          173.5051
+        ]
+      },
+      "output_tokens": {
+        "mean": 45.58,
+        "ci95": [
+          43.7199,
+          47.38
+        ]
+      },
+      "net_tokens": {
+        "mean": 218.23,
+        "ci95": [
+          215.94,
+          220.47
+        ]
+      },
+      "select_ms": {
+        "mean": 0.0439,
+        "ci95": [
+          0.0433,
+          0.0445
+        ]
+      },
+      "prefill_ms": {
+        "mean": 546.7208,
+        "ci95": [
+          539.5688,
+          554.3636
+        ]
+      },
+      "decode_ms": {
+        "mean": 934.5858,
+        "ci95": [
+          895.9728,
+          972.5677
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean": 1482.0326,
+        "ci95": [
+          1442.2983,
+          1521.6524
+        ]
+      },
+      "exact_match": {
+        "mean": 0.755,
+        "ci95": [
+          0.75,
+          0.765
+        ]
+      },
+      "entity_recall": {
+        "mean": 0.94,
+        "ci95": [
+          0.92,
+          0.96
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.89,
+        "ci95": [
+          0.855,
+          0.925
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.885,
+        "ci95": [
+          0.85,
+          0.92
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "evidence_fallback_used": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "var_d": {
+      "n_scenarios": 50,
+      "n_rows": 400,
+      "input_tokens": {
+        "mean": 120.625,
+        "ci95": [
+          120.12,
+          121.215
+        ]
+      },
+      "output_tokens": {
+        "mean": 39.025,
+        "ci95": [
+          37.835,
+          40.245
+        ]
+      },
+      "net_tokens": {
+        "mean": 159.65,
+        "ci95": [
+          158.155,
+          161.21
+        ]
+      },
+      "select_ms": {
+        "mean": 0.1742,
+        "ci95": [
+          0.1713,
+          0.1765
+        ]
+      },
+      "prefill_ms": {
+        "mean": 381.1455,
+        "ci95": [
+          376.3876,
+          386.5657
+        ]
+      },
+      "decode_ms": {
+        "mean": 797.4484,
+        "ci95": [
+          772.6145,
+          822.3667
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean": 1179.3801,
+        "ci95": [
+          1152.4469,
+          1206.3448
+        ]
+      },
+      "exact_match": {
+        "mean": 0.59,
+        "ci95": [
+          0.545,
+          0.635
+        ]
+      },
+      "entity_recall": {
+        "mean": 0.99,
+        "ci95": [
+          0.9767,
+          1.0
+        ]
+      },
+      "relation_recovery": {
+        "mean": 0.985,
+        "ci95": [
+          0.965,
+          1.0
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean": 0.895,
+        "ci95": [
+          0.86,
+          0.93
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "evidence_fallback_used": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "paired_vs_baseline_r3": {
+    "var_a": {
+      "input_tokens": {
+        "mean_diff": -4.5,
+        "ci95": [
+          -4.5,
+          -4.5
+        ]
+      },
+      "net_tokens": {
+        "mean_diff": -6.475,
+        "ci95": [
+          -7.92,
+          -5.07
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": -57.3881,
+        "ci95": [
+          -90.2392,
+          -26.1213
+        ]
+      },
+      "exact_match": {
+        "mean_diff": 0.0,
+        "ci95": [
+          -0.015,
+          0.015
+        ]
+      },
+      "entity_recall": {
+        "mean_diff": 0.0033,
+        "ci95": [
+          -0.0067,
+          0.0133
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": 0.005,
+        "ci95": [
+          -0.01,
+          0.02
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": 0.01,
+        "ci95": [
+          -0.01,
+          0.03
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean_diff": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "var_d": {
+      "input_tokens": {
+        "mean_diff": -56.525,
+        "ci95": [
+          -56.795,
+          -56.295
+        ]
+      },
+      "net_tokens": {
+        "mean_diff": -65.055,
+        "ci95": [
+          -66.8651,
+          -63.1849
+        ]
+      },
+      "e2e_accum_ms": {
+        "mean_diff": -360.0406,
+        "ci95": [
+          -398.3436,
+          -320.3944
+        ]
+      },
+      "exact_match": {
+        "mean_diff": -0.165,
+        "ci95": [
+          -0.21,
+          -0.115
+        ]
+      },
+      "entity_recall": {
+        "mean_diff": 0.0533,
+        "ci95": [
+          0.035,
+          0.0733
+        ]
+      },
+      "relation_recovery": {
+        "mean_diff": 0.1,
+        "ci95": [
+          0.065,
+          0.135
+        ]
+      },
+      "constraint_satisfaction": {
+        "mean_diff": 0.02,
+        "ci95": [
+          -0.005,
+          0.045
+        ]
+      },
+      "obsolete_info_rate": {
+        "mean_diff": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    }
+  }
+}
